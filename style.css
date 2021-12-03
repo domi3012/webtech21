@@ -82,3 +82,12 @@ a {
     background-color: #f1f1f1;
     text-align: center;
 }
+
+.error {
+    border: 1px solid;
+    margin: 10px auto;
+    padding: 15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    max-width: 460px;
+}

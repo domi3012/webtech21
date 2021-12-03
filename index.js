@@ -1,14 +1,8 @@
 express = require('express')
 const path = require('path');
-var flash = require('express-flash')
 const bodyParser = require('body-parser');
-var cookie = require('cookie-parser')
-var session = require('express-session')
 
 const app = express()
-app.use(cookie('keyboard cat'));
-app.use(session({ cookie: { maxAge: 60000 }}));
-app.use(flash());
 
 var users = []
 
@@ -21,13 +15,28 @@ app.post('/registerUser', urlencodeParser, (req, res) => {
     if (!req.body || req.body.username ===  "" ||
         req.body.password === "" ||
         req.body.password !== req.body.password_repeat){
-        req.flash('error', 'Invalid registration')
-        res.redirect("/register.html")
+        res.sendFile(__dirname + "/html/registerInvalid.html");
         return
     }
     users.push({"username": req.body.username, "password": req.body.password})
-    req.flash('success', 'You have logged in')
     res.redirect("/login.html");
+
+})
+
+app.post('/loginUser', urlencodeParser, (req, res) => {
+    if (!req.body || req.body.username ===  "" ||
+        req.body.password === ""){
+        res.sendFile(__dirname + "/html/loginInvalid.html");
+        return
+    }
+    users.map((k) => {
+        if(k.password === req.body.password && k.username === req.body.username){
+            res.redirect("/index.html");
+            return
+        }
+    })
+    res.sendFile(__dirname + "/html/loginInvalid.html");
+
 
 })
 
