@@ -1,51 +1,83 @@
 express = require('express')
 const path = require('path');
 const bodyParser = require('body-parser');
+const sessions = require('express-session');
 
 const app = express()
+app.set('view engine', 'ejs');
 
 var users = []
 
 var urlencodeParser = bodyParser.urlencoded({extended: false})
 
+const oneDay = 1000 * 60 * 60 * 24;
 
+//session middleware
+app.use(sessions({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false
+}));
+
+var session;
 
 
 app.post('/registerUser', urlencodeParser, (req, res) => {
     if (!req.body || req.body.username ===  "" ||
         req.body.password === "" ||
         req.body.password !== req.body.password_repeat){
-        res.sendFile(__dirname + "/html/registerInvalid.html");
+        res.render("register", {error: true});
         return
     }
     users.push({"username": req.body.username, "password": req.body.password})
-    res.redirect("/login.html");
+    res.render("login", {error: false});
 
 })
 
 app.post('/loginUser', urlencodeParser, (req, res) => {
     if (!req.body || req.body.username ===  "" ||
         req.body.password === ""){
-        res.sendFile(__dirname + "/html/loginInvalid.html");
+        res.render("login", {error: true});
         return
     }
+    var found = false;
     users.map((k) => {
         if(k.password === req.body.password && k.username === req.body.username){
-            res.redirect("/index.html");
+            session=req.session;
+            session.userid=req.body.username;
+            res.redirect("/index.html")
+            found = true;
             return
         }
     })
-    res.sendFile(__dirname + "/html/loginInvalid.html");
-
-
+    if (found) {
+        return;
+    }
+    res.render("login", {error: true});
 })
 
 app.get('/register.html', function(req, res) {
-    res.sendFile(__dirname + "/html/register.html");
+    res.render("register", {error: false});
+});
+
+app.get('/logout.html', function(req, res) {
+    session = undefined;
+    res.redirect("index.html");
 });
 
 app.get('/login.html', function(req, res) {
-    res.sendFile(__dirname + "/html/login.html");
+    res.render("login", {error: false});
+});
+
+app.get('/index.html', function(req, res) {
+    console.log("hallo")
+    if (session && session.userid){
+        res.render("index", {loggedIn: true});
+        return
+    }
+    res.render("index", {loggedIn: false});
+
 });
 
 

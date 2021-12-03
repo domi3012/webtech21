@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "cookie-parser": "^1.4.6",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-flash": "github:RGBboy/express-flash",
     "express-session": "^1.17.2"
