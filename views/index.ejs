@@ -24,5 +24,29 @@
 </div>
 <header>Welcome to our best query and answer system in the World</header>
 
+<!-- Forum List -->
+
+
+<div>
+    <%for(var i = 0; i < text.length; i++){%>
+    <p></p>
+    <p></p>
+    <div>
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div>
+                        <h6><a><%=text[i].header%></a></h6>
+                        <p>
+                            <%=text[i].question%>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <%}%>
+</div>
+
 </body>
 </html>
