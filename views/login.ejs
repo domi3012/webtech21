@@ -11,8 +11,22 @@
     <a href="question.html">Question</a>
     <a href="new.html">New</a>
     <a href="about.html">About</a>
-    <a href="login.html" class="current setUp">Login</a>
+
+    <a href="<%if(loggedIn){%>
+        logout.html
+        <%} else{%>
+        login.html
+        <%}%>" class="setUp current"><%if(loggedIn){%>
+            LogOut
+        <%} else{%>
+            LogIn
+        <%}%></a>
     <a href="register.html" class="setUp">Register</a>
+    <div class="search-container">
+        <form action="/search">
+            <input type="text" placeholder="Search.." name="search">
+        </form>
+    </div>
 </div>
 
 <form method="POST" action="/loginUser">
@@ -33,5 +47,7 @@
     </div>
 </form>
 
+
+<footer><a href="about.html">Who are we?</a></footer>
 </body>
 </html>

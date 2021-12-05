@@ -11,6 +11,7 @@
     <a href="question.html">Question</a>
     <a href="new.html">New</a>
     <a href="about.html">About</a>
+
     <a href="<%if(loggedIn){%>
         logout.html
         <%} else{%>
@@ -20,11 +21,14 @@
         <%} else{%>
         LogIn
         <%}%></a>
-    <a href="../html/register.html" class="setUp">Register</a>
+    <a href="register.html" class="setUp">Register</a>
+    <div class="search-container">
+        <form action="/search">
+            <input type="text" placeholder="Search.." name="search">
+        </form>
+    </div>
 </div>
 <header>Welcome to our best query and answer system in the World</header>
-
-<!-- Forum List -->
 
 
 <div>
@@ -48,5 +52,7 @@
     <%}%>
 </div>
 
+
+<footer><a href="about.html">Who are we?</a></footer>
 </body>
 </html>

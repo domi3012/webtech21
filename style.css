@@ -122,3 +122,28 @@ header {
     min-height: 1px;
     padding: 1rem;
 }
+
+.navbar .search-container {
+    float: right;
+    height: 20px;
+}
+
+.navbar input[type=text] {
+    padding: 6px;
+    margin-top: 8px;
+    font-size: 17px;
+    border: none;
+}
+
+footer {
+    display:flex;
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:60px;
+    border-top: 1px solid gray;
+    justify-content:center;
+    align-items:center;
+}
+
+

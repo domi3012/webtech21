@@ -21,6 +21,8 @@ var texts = [{
 
 var users = []
 
+var currentUsers = []
+
 var urlencodeParser = bodyParser.urlencoded({extended: false})
 
 const oneDay = 1000 * 60 * 60 * 24;
@@ -40,18 +42,18 @@ app.post('/registerUser', urlencodeParser, (req, res) => {
     if (!req.body || req.body.username === "" ||
         req.body.password === "" ||
         req.body.password !== req.body.password_repeat) {
-        res.render("register", {error: true});
+        res.render("register", {error: true, loggedIn: false});
         return
     }
     users.push({"username": req.body.username, "password": req.body.password})
-    res.render("login", {error: false});
+    res.render("login", {error: false, loggedIn: false});
 
 })
 
 app.post('/loginUser', urlencodeParser, (req, res) => {
     if (!req.body || req.body.username === "" ||
         req.body.password === "") {
-        res.render("login", {error: true});
+        res.render("login", {error: true, loggedIn: false});
         return
     }
     var found = false;
@@ -67,11 +69,15 @@ app.post('/loginUser', urlencodeParser, (req, res) => {
     if (found) {
         return;
     }
-    res.render("login", {error: true});
+    res.render("login", {error: true, loggedIn: false});
 })
 
 app.get('/register.html', function (req, res) {
-    res.render("register", {error: false});
+    activeSession = false
+    if (session && session.userid) {
+        activeSession = true;
+    }
+    res.render("register", {error: false, loggedIn: activeSession});
 });
 
 app.get('/logout.html', function (req, res) {
@@ -80,19 +86,26 @@ app.get('/logout.html', function (req, res) {
 });
 
 app.get('/login.html', function (req, res) {
-    res.render("login", {error: false});
+    activeSession = false
+    if (session && session.userid) {
+        activeSession = true;
+    }
+    res.render("login", {error: false, loggedIn: activeSession});
 });
 
 app.get('/index.html', function (req, res) {
-    console.log("hallo")
     if (session && session.userid) {
-        res.render("index", {loggedIn: true, text: JSON.stringify(texts)});
+        res.render("index", {loggedIn: true, text: texts});
         return
     }
     test = JSON.stringify(texts);
     res.render("index", {loggedIn: false, text: texts});
 
 });
+
+app.get("/search", urlencodeParser, (req, res) => {
+    console.log(req.body.search)
+})
 
 
 app.get('/style.css', function (req, res) {
