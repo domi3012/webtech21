@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>WebTech21</title>
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <div class="navbar">
@@ -12,15 +13,17 @@
     <a href="new.html">New</a>
     <a href="about.html">About</a>
 
-    <a href="<%if(loggedIn){%>
+    <a href="<% if(loggedIn){ %>
         logout.html
-        <%} else{%>
+        <% } else{ %>
         login.html
-        <%}%>" class="setUp"><%if(loggedIn){%>
-        LogOut
-        <%} else{%>
-        LogIn
-        <%}%></a>
+        <% } %>" class="setUp">
+        <% if(loggedIn){ %>
+            LogOut
+        <% } else{ %>
+            LogIn
+        <% } %>
+    </a>
     <a href="register.html" class="setUp">Register</a>
     <div class="search-container">
         <form action="/search">
@@ -32,7 +35,7 @@
 
 
 <div>
-    <%for(var i = 0; i < text.length; i++){%>
+    <% for(var i = 0; i < text.length; i++){ %>
     <p></p>
     <p></p>
     <div>
@@ -40,16 +43,26 @@
             <div class="card-body">
                 <div>
                     <div>
-                        <h6><a><%=text[i].header%></a></h6>
-                        <p>
-                            <%=text[i].question%>
-                        </p>
+                        <h6><a href="#"><%= text[i].Title %></a></h6>
+                        <div>
+                            <%- text[i].Body %>
+                        </div>
+                        <div class="voting-container">
+                            <!--ToDo connect it with counter and add to js-->
+                            <button class="dislike">
+                                <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                            </button>
+
+                            <button class="like">
+                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <%}%>
+    <% } %>
 </div>
 
 

@@ -2,22 +2,12 @@ express = require('express')
 const path = require('path');
 const bodyParser = require('body-parser');
 const sessions = require('express-session');
+const fs = require('fs');
+const fsPromises = fs.promises;
 
 const app = express()
 app.set('view engine', 'ejs');
 
-
-var texts = [{
-    header: "Alex is nice",
-    question: "Why is Alex nice?",
-    answers: ["amazing dude", "nice to have"]
-},
-    {
-        header: "Bibo is nice",
-        question: "Why is Bibo nice?",
-        answers: ["nice to have"]
-    }
-]
 
 var users = []
 
@@ -34,6 +24,8 @@ app.use(sessions({
     cookie: {maxAge: oneDay},
     resave: false
 }));
+
+var questions, answers;
 
 var session;
 
@@ -94,13 +86,16 @@ app.get('/login.html', function (req, res) {
 });
 
 app.get('/index.html', function (req, res) {
+    let keys = Object.keys(questions);
+    let indexData = [];
+    for(let i = 0; i < 5; i++){
+        indexData.push(questions[keys[i]])
+    }
     if (session && session.userid) {
-        res.render("index", {loggedIn: true, text: texts});
+        res.render("index", {loggedIn: true, text: indexData});
         return
     }
-    test = JSON.stringify(texts);
-    res.render("index", {loggedIn: false, text: texts});
-
+    res.render("index", {loggedIn: false, text: indexData});
 });
 
 app.get("/search", urlencodeParser, (req, res) => {
@@ -115,6 +110,28 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/html/404.html'))
 })
 
+function readData(questionsTxt, answersTxt) {
+    try {
+        const data = fs.readFileSync(questionsTxt, 'utf8')
+        questions = JSON.parse(data)
+    } catch (err) {
+        console.error(err)
+    }
+
+
+    try {
+        const data = fs.readFileSync(answersTxt, 'utf8')
+        answers = JSON.parse(data)
+    } catch (err) {
+        console.error(err)
+    }
+
+}
+
 app.listen(3000, () => {
+    var questions_json = "./input_data/Questions.json"
+    var answers_json = "./input_data/Answers.json"
+    readData(questions_json, answers_json)
+
     console.log(`Example app listening at http://localhost:3000`);
 });

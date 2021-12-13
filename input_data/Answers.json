@@ -1,0 +1,37 @@
+{
+  "5":{
+    "OwnerUserId":23.0,
+    "CreationDate":"2010-07-19T19:14:43Z",
+    "ParentId":3,
+    "Score":85,
+    "Body":"<p>The R-project<\/p>\n\n<p><a href=\"http:\/\/www.r-project.org\/\">http:\/\/www.r-project.org\/<\/a><\/p>\n\n<p>R is valuable and significant because it was the first widely-accepted Open-Source alternative to big-box packages.  It's mature, well supported, and a standard within many scientific communities.<\/p>\n\n<ul>\n<li><a href=\"http:\/\/www.inside-r.org\/why-use-r\">Some reasons why it is useful and valuable<\/a> <\/li>\n<li>There are some nice tutorials <a href=\"http:\/\/gettinggeneticsdone.blogspot.com\/search\/label\/ggplot2\">here<\/a>.<\/li>\n<\/ul>\n"
+  },
+  "9":{
+    "OwnerUserId":50.0,
+    "CreationDate":"2010-07-19T19:16:27Z",
+    "ParentId":3,
+    "Score":13,
+    "Body":"<p><a href=\"http:\/\/incanter.org\/\">Incanter<\/a> is a Clojure-based, R-like platform (environment + libraries) for statistical computing and graphics. <\/p>\n"
+  },
+  "12":{
+    "OwnerUserId":5.0,
+    "CreationDate":"2010-07-19T19:18:41Z",
+    "ParentId":7,
+    "Score":21,
+    "Body":"<p>See my response to <a href=\"http:\/\/stackoverflow.com\/questions\/2252144\/datasets-for-running-statistical-analysis-on\/2252450#2252450\">\"Datasets for Running Statistical Analysis on\"<\/a> in reference to datasets in R.<\/p>\n"
+  },
+  "13":{
+    "OwnerUserId":23.0,
+    "CreationDate":"2010-07-19T19:18:56Z",
+    "ParentId":6,
+    "Score":18,
+    "Body":"<p>Machine Learning seems to have its basis in the pragmatic - a Practical observation or simulation of reality.  Even within statistics, mindless \"checking of models and assumptions\" can lead to discarding methods that are useful.<\/p>\n\n<p>For example, years ago, the very first commercially available (and working) Bankruptcy model implemented by the credit bureaus was created through a plain old linear regression model targeting a 0-1 outcome.  Technically, that's a bad approach, but practically, it worked.<\/p>\n"
+  },
+  "14":{
+    "OwnerUserId":36.0,
+    "CreationDate":"2010-07-19T19:19:03Z",
+    "ParentId":3,
+    "Score":5,
+    "Body":"<p>I second that Jay. Why is R valuable? Here's a short list of reasons. <a href=\"http:\/\/www.inside-r.org\/why-use-r\" rel=\"nofollow\">http:\/\/www.inside-r.org\/why-use-r<\/a>. Also check out <a href=\"http:\/\/had.co.nz\/ggplot2\/\" rel=\"nofollow\">ggplot2<\/a> - a very nice graphics package for R. Some nice tutorials <a href=\"http:\/\/gettinggeneticsdone.blogspot.com\/search\/label\/ggplot2\" rel=\"nofollow\">here<\/a>.<\/p>\n"
+  }
+}

@@ -5,7 +5,7 @@ const fs = require('fs');
 const fsPromises = fs.promises;
 const w2v = require('word2vec');
 const WordVector = require('word2vec/lib/WordVector');
-const word_vectors_legth = 100;
+const word_vectors_length = 100;
 
 // =============================================================================
 
@@ -53,7 +53,7 @@ function embeddings(model, cleanedString) {
     document = document.split(' ');
     document.pop(); // removes the empty char at the end
 
-    var embedding = new WordVector(cleanedString, new Float32Array(word_vectors_legth, 0));
+    var embedding = new WordVector(cleanedString, new Float32Array(word_vectors_length, 0));
     for(const word of document)
     {
         let vector = model.getVector(word)
@@ -89,7 +89,7 @@ async function createEmbeddings(inputFile, modelFile, outputFile) {
     data = data.toString().split("\n");
     let document_embeddings = []
 
-    document_embeddings.push(data.length + " " + word_vectors_legth)
+    document_embeddings.push(data.length + " " + word_vectors_length)
 
     for(const sentence of data)
     {
@@ -107,7 +107,7 @@ function trainAndLoadW2VModel(input_file, output_file, callback)
 {
     w2v.word2vec( input_file, output_file, {
         cbow: 1,
-        size: word_vectors_legth,
+        size: word_vectors_length,
         window: 8,
         hs: 0,
         silent: 1,
