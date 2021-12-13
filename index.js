@@ -17,6 +17,8 @@ var urlencodeParser = bodyParser.urlencoded({extended: false})
 
 const oneDay = 1000 * 60 * 60 * 24;
 
+var votingDictionary = {}
+
 //session middleware
 app.use(sessions({
     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
@@ -88,18 +90,37 @@ app.get('/login.html', function (req, res) {
 app.get('/index.html', function (req, res) {
     let keys = Object.keys(questions);
     let indexData = [];
-    for(let i = 0; i < 5; i++){
+    for (let i = 0; i < 5; i++) {
+        questions[keys[i]].key = keys[i]
         indexData.push(questions[keys[i]])
+        let index = parseInt(keys[i])
+        if (!(index in votingDictionary)){
+            votingDictionary[index] = {"upVotes": 0, "downVotes": 0}
+        }
     }
     if (session && session.userid) {
-        res.render("index", {loggedIn: true, text: indexData});
+        res.render("index", {loggedIn: true, text: indexData, voting: votingDictionary});
         return
     }
-    res.render("index", {loggedIn: false, text: indexData});
+    res.render("index", {loggedIn: false, text: indexData, voting: votingDictionary});
 });
 
 app.get("/search", urlencodeParser, (req, res) => {
     console.log(req.body.search)
+})
+
+app.post("/vote", urlencodeParser, (req, res) => {
+    console.log(req.body.upvote)
+    console.log(req.body.downvote)
+    let key = parseInt(req.body.key)
+    if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
+        votingDictionary[key].upVotes += 1
+    } else
+        votingDictionary[key].downVotes += 1;
+    res.redirect("/index.html")
+    return
+
+
 })
 
 

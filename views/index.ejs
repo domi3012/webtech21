@@ -36,32 +36,34 @@
 
 <div>
     <% for(var i = 0; i < text.length; i++){ %>
-    <p></p>
-    <p></p>
-    <div>
-        <div class="card">
-            <div class="card-body">
-                <div>
+        <p></p>
+        <p></p>
+        <div>
+            <div class="card">
+                <div class="card-body">
                     <div>
-                        <h6><a href="#"><%= text[i].Title %></a></h6>
                         <div>
-                            <%- text[i].Body %>
-                        </div>
-                        <div class="voting-container">
-                            <!--ToDo connect it with counter and add to js-->
-                            <button class="dislike">
-                                <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
-                            </button>
+                            <h6><a href="#"><%= text[i].Title %></a></h6>
+                            <div>
+                                <%- text[i].Body %>
+                            </div>
+                            <div class="voting-container">
+                                <!--ToDo connect it with counter and add to js-->
+                                <form action="/vote" method="post">
+                                    <input type="hidden" name="key" value="<%= text[i].key %>" />
+                                    <input type="submit" name="upvote" value="Upvote <%= voting[parseInt(text[i].key)].upVotes %>" />
+                                </form>
 
-                            <button class="like">
-                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
-                            </button>
+                                <form action="/vote" method="post">
+                                    <input type="hidden" name="key" value="<%= text[i].key %>" />
+                                    <input type="submit" name="downvote" value="Downvote <%= voting[parseInt(text[i].key)].downVotes %>" />
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
     <% } %>
 </div>
 
