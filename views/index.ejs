@@ -45,7 +45,7 @@
                         <div>
                             <h6><a href="#"><%= text[i].Title %></a></h6>
                             <div>
-                                <%- text[i].Body %>
+                                <%-text[i].Body.substring(0, 200) + "..." %>
                             </div>
                             <div class="voting-container">
                                 <!--ToDo connect it with counter and add to js-->

@@ -110,9 +110,15 @@ app.get("/search", urlencodeParser, (req, res) => {
 })
 
 app.post("/vote", urlencodeParser, (req, res) => {
-    console.log(req.body.upvote)
-    console.log(req.body.downvote)
     let key = parseInt(req.body.key)
+    activeSession = false
+    if (session && session.userid) {
+        activeSession = true;
+    }
+    if (!activeSession){
+        res.redirect("/index.html")
+        return
+    }
     if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
         votingDictionary[key].upVotes += 1
     } else
