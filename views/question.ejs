@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Question</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="question.html" class="current">Question</a>
+    <a href="new.html">New</a>
+    <a href="about.html">About</a>
+
+    <a href="<%if(loggedIn){%>
+        logout.html
+        <%} else{%>
+        login.html
+        <%}%>" class="setUp current"><%if(loggedIn){%>
+            LogOut
+        <%} else{%>
+            LogIn
+        <%}%></a>
+    <a href="register.html" class="setUp">Register</a>
+    <div class="search-container">
+        <form action="/search">
+            <input type="text" placeholder="Search.." name="search">
+        </form>
+    </div>
+</div>
+<header>Your Question</header> <!--TODO make nice header with title-->
+<div>
+        <p></p>
+        <p></p>
+        <div>
+            <div class="card">
+                <div class="card-body">
+                    <div>
+                        <div>
+                            <h5><a href="/question/<%= question.key %>"><%= question.Title %></a></h5>
+                            <div>
+                                <%-question.Body%>
+                            </div>
+                            <div class="voting-container">
+                                <!--ToDo connect it with counter and add to js-->
+                                <form action="/vote" method="post">
+                                    <input type="hidden" name="key" value="<%= question.key %>" />
+                                    <input type="submit" name="upvote" value="Upvote " />
+                                </form>
+
+                                <form action="/vote" method="post">
+                                    <input type="hidden" name="key" value="<%= question.key %>" />
+                                    <input type="submit" name="downvote" value="Downvote " />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% for(var i = 0; i < answers.length; i++){ %>
+                <p></p>
+                <p></p>
+            <div>
+                <div class="card">
+                    <div class="card-body">
+                        <div>
+                            <div>
+                                <h5><a href="/question/<%= answers[i].key %>"><%= answers[i].Title %></a></h5>
+                                <h6>Created on <%= answers[i].CreationDate %></h6>
+                                <h6>Created by User <%= answers[i].OwnerUserId %></h6>
+                                <div>
+                                    <%-answers[i].Body%>
+                                </div>
+                                <div class="voting-container">
+                                    <!--ToDo connect it with counter and add to js-->
+                                    <form action="/vote" method="post">
+                                        <input type="hidden" name="key" value="<%= answers[i].key %>" />
+                                    </form>
+
+                                    <form action="/vote" method="post">
+                                        <input type="hidden" name="key" value="<%= answers[i].key %>" />
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %>
+
+</div>
+
+
+<footer><a href="about.html">Who are we?</a></footer>
+</body>
+</html>

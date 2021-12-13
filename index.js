@@ -109,12 +109,23 @@ app.get("/search", urlencodeParser, (req, res) => {
     console.log(req.body.search)
 })
 
+app.get("/question/:qid", urlencodeParser, (req, res) => {
+    let question = questions[req.params.qid]
+    console.log(question)
+    let keys = Object.keys(answers);
+    let answer = [];
+    keys.forEach((e) => {
+        if (answers[e].ParentId === parseInt(req.params.qid)){
+            answers[e].key = e
+            console.log(answers[e]["key"])
+            answer.push(answers[e]);
+        }
+    })
+    res.render("question", {question: question, answers: answer, loggedIn: false}) //TODO change to active session
+})
+
 app.post("/vote", urlencodeParser, (req, res) => {
     let key = parseInt(req.body.key)
-    activeSession = false
-    if (session && session.userid) {
-        activeSession = true;
-    }
     if (!activeSession){
         res.redirect("/index.html")
         return

@@ -2,7 +2,7 @@
   "5":{
     "OwnerUserId":23.0,
     "CreationDate":"2010-07-19T19:14:43Z",
-    "ParentId":3,
+    "ParentId":6,
     "Score":85,
     "Body":"<p>The R-project<\/p>\n\n<p><a href=\"http:\/\/www.r-project.org\/\">http:\/\/www.r-project.org\/<\/a><\/p>\n\n<p>R is valuable and significant because it was the first widely-accepted Open-Source alternative to big-box packages.  It's mature, well supported, and a standard within many scientific communities.<\/p>\n\n<ul>\n<li><a href=\"http:\/\/www.inside-r.org\/why-use-r\">Some reasons why it is useful and valuable<\/a> <\/li>\n<li>There are some nice tutorials <a href=\"http:\/\/gettinggeneticsdone.blogspot.com\/search\/label\/ggplot2\">here<\/a>.<\/li>\n<\/ul>\n"
   },
