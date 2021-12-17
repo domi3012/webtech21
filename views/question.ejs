@@ -7,21 +7,21 @@
 </head>
 <body>
 <div class="navbar">
-    <a href="index.html">Home</a>
-    <a href="question.html" class="current">Question</a>
-    <a href="new.html">New</a>
-    <a href="about.html">About</a>
+    <a href="../index.html">Home</a>
+    <a href="../question.html" class="current">Question</a>
+    <a href="../new.html">New</a>
+    <a href="../about.html">About</a>
 
     <a href="<%if(loggedIn){%>
-        logout.html
+        ../logout.html
         <%} else{%>
-        login.html
-        <%}%>" class="setUp current"><%if(loggedIn){%>
+        ../login.html
+        <%}%>" class="setUp "><%if(loggedIn){%>
             LogOut
         <%} else{%>
             LogIn
         <%}%></a>
-    <a href="register.html" class="setUp">Register</a>
+    <a href="../register.html" class="setUp">Register</a>
     <div class="search-container">
         <form action="/search">
             <input type="text" placeholder="Search.." name="search">
@@ -38,19 +38,21 @@
                     <div>
                         <div>
                             <h5><a href="/question/<%= question.key %>"><%= question.Title %></a></h5>
+                            <h6>Created on <%= question.CreationDate %></h6>
+                            <h6>Created by User <%= question.OwnerUserId %></h6>
                             <div>
                                 <%-question.Body%>
                             </div>
                             <div class="voting-container">
                                 <!--ToDo connect it with counter and add to js-->
-                                <form action="/vote" method="post">
+                                <form action="/Ansvote" method="post">
                                     <input type="hidden" name="key" value="<%= question.key %>" />
-                                    <input type="submit" name="upvote" value="Upvote " />
+                                    <input type="submit" name="upvote" value="Upvote <%= questVoting[parseInt(question.key)].upVotes %>" />
                                 </form>
 
-                                <form action="/vote" method="post">
+                                <form action="/Ansvote" method="post">
                                     <input type="hidden" name="key" value="<%= question.key %>" />
-                                    <input type="submit" name="downvote" value="Downvote " />
+                                    <input type="submit" name="downvote" value="Downvote <%= questVoting[parseInt(question.key)].downVotes %>" />
                                 </form>
                             </div>
                         </div>
@@ -74,12 +76,16 @@
                                 </div>
                                 <div class="voting-container">
                                     <!--ToDo connect it with counter and add to js-->
-                                    <form action="/vote" method="post">
+                                    <form action="/Ansvote" method="post">
+                                        <input type="hidden" name="parentkey" value="<%= question.key %>" />
                                         <input type="hidden" name="key" value="<%= answers[i].key %>" />
+                                        <input type="submit" name="upvoteAns" value="Upvote <%= ansVoting[parseInt(answers[i].key)].upVotes %>" />
                                     </form>
 
-                                    <form action="/vote" method="post">
+                                    <form action="/Ansvote" method="post">
+                                        <input type="hidden" name="parentkey" value="<%= question.key %>" />
                                         <input type="hidden" name="key" value="<%= answers[i].key %>" />
+                                        <input type="submit" name="downvoteAns" value="Downvote <%= ansVoting[parseInt(answers[i].key)].downVotes %>" />
                                     </form>
                                 </div>
                             </div>
