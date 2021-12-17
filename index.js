@@ -70,11 +70,43 @@ app.post('/loginUser', urlencodeParser, (req, res) => {
     res.render("login", {error: true, loggedIn: false});
 })
 
+app.post('/postNewQuestion', urlencodeParser, (req, res) => {
+    if (!req.body || req.body.title === "" ||
+        req.body.question === "") {
+        res.render("new", { loggedIn: activeSession});
+        return
+    }
+    let keys = Object.keys(questions);
+    let lastIndex = parseInt(keys[keys.length-1])+1;
+    console.log(lastIndex);
+    const post = {
+        "OwnerUserId": session.userid,
+        "CreationDate": new Date(Date.now()).toISOString(),
+        "Score": 0,
+        "Title": req.body.title,
+        "Body": req.body.question,
+        "key": lastIndex
+    }
+    questions[lastIndex] = post;
+    votingQuestionsDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
+
+    res.redirect("/question/"+lastIndex);
+})
+
 app.get('/register.html', function (req, res) {
     if (session && session.userid) {
         activeSession = true;
     }
     res.render("register", {error: false, loggedIn: activeSession});
+});
+
+
+
+app.get('/new.html', function (req, res) {
+    if (session && session.userid) {
+        activeSession = true;
+    }
+    res.render("new", { loggedIn: activeSession});
 });
 
 app.get('/logout.html', function (req, res) {
@@ -120,7 +152,6 @@ app.get("/search", urlencodeParser, (req, res) => {
 
 app.get("/question/:qid", urlencodeParser, (req, res) => {
     let question = questions[req.params.qid]
-    console.log(question)
     let keys = Object.keys(answers);
     let answer = [];
     keys.forEach((e) => {
@@ -129,17 +160,18 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
         }
         if (answers[e].ParentId === parseInt(req.params.qid)){
             answers[e].key = e
-            console.log(answers[e]["key"])
             answer.push(answers[e]);
         }
     })
     if (!Object.keys(votingAnswersDictionary).length || !Object.keys(votingQuestionsDictionary).length) {
-        console.log("test");
         res.redirect("../index.html")
         return
     }
     res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary, loggedIn: activeSession}) //TODO change to active session
 })
+
+
+
 
 app.post("/vote", urlencodeParser, (req, res) => {
     let key = parseInt(req.body.key)

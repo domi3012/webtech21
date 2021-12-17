@@ -44,6 +44,16 @@ input[type=text], input[type=password] {
     border: none;
     background: #f1f1f1;
 }
+textarea {
+    width: 100%;
+    padding: 15px;
+    height: 500px;
+    resize: none;
+    top: 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
 
 input[type=text]:focus, input[type=password]:focus {
     background-color: #ddd;
@@ -149,5 +159,14 @@ footer {
 
 .voting-container {
     float: right;
+}
+
+
+.blur {
+    filter:url(#wherearemyglasses);
+    /* ^ for Firefox */
+    -webkit-filter: blur(6px);
+    /* ^ Webkit browsers */
+    filter: blur(6px);
 }
 
