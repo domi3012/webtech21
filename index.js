@@ -9,7 +9,7 @@ const app = express()
 app.set('view engine', 'ejs');
 
 
-var users = []
+var users = [{"username": "d", "password": "d"}]
 
 var currentUsers = []
 
@@ -21,6 +21,9 @@ const oneDay = 1000 * 60 * 60 * 24;
 
 var votingQuestionsDictionary = {}
 var votingAnswersDictionary = {}
+
+var questionsJsonFile = "./input_data/Questions.json"
+var answersJsonFile = "./input_data/Answers.json"
 
 //session middleware
 app.use(sessions({
@@ -88,6 +91,7 @@ app.post('/postNewQuestion', urlencodeParser, (req, res) => {
         "key": lastIndex
     }
     questions[lastIndex] = post;
+    readAndAddToFile(post, questionsJsonFile)
     votingQuestionsDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
 
     res.redirect("/question/"+lastIndex);
@@ -105,12 +109,13 @@ app.post('/postNewAnswer', urlencodeParser, (req, res) => {
     const post = {
         "OwnerUserId": session.userid,
         "CreationDate": new Date(Date.now()).toISOString(),
-        "ParentId": req.body.parentkey,
+        "ParentId": parseInt(req.body.parentkey),
         "Score": 0,
         "Body": req.body.answer,
         "key": lastIndex
     }
     answers[lastIndex] = post;
+    readAndAddToFile(post, answersJsonFile)
     votingAnswersDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
     res.redirect("/question/" + req.body.parentkey)
 })
@@ -257,12 +262,32 @@ function readData(questionsTxt, answersTxt) {
     } catch (err) {
         console.error(err)
     }
-
 }
 
 app.listen(3000, () => {
-    var questions_json = "./input_data/Questions.json"
-    var answers_json = "./input_data/Answers.json"
-    readData(questions_json, answers_json)
+    //var vecQuestionModel = "t";
+    //var vecAnswersModel =
+    readData(questionsJsonFile, answersJsonFile)
     console.log(`Example app listening at http://localhost:3000`);
 });
+
+
+function readAndAddToFile(post, file){
+    try {
+        const data = fs.readFileSync(file, 'utf8')
+        tmpFile = JSON.parse(data)
+        let tmpEntry = post.key
+        delete post.key
+        tmpFile[tmpEntry] = post
+        let json = JSON.stringify(tmpFile, null, 4);
+        try {
+            fs.writeFileSync(file, json)
+            //file written successfully
+        } catch (err) {
+            console.error(err)
+        }
+    } catch (err) {
+        console.error(err)
+    }
+
+}
