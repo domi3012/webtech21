@@ -73,7 +73,7 @@ app.post('/loginUser', urlencodeParser, (req, res) => {
 app.post('/postNewQuestion', urlencodeParser, (req, res) => {
     if (!req.body || req.body.title === "" ||
         req.body.question === "") {
-        res.render("new", { loggedIn: activeSession});
+        res.redirect("new", { loggedIn: activeSession});
         return
     }
     let keys = Object.keys(questions);
@@ -91,6 +91,28 @@ app.post('/postNewQuestion', urlencodeParser, (req, res) => {
     votingQuestionsDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
 
     res.redirect("/question/"+lastIndex);
+})
+
+app.post('/postNewAnswer', urlencodeParser, (req, res) => {
+    if (!req.body || req.body.answer === "") {
+        var test = req.body.parentkey
+        res.redirect("/question/" + req.body.parentkey);
+        return
+    }
+    let keys = Object.keys(answers);
+    let lastIndex = parseInt(keys[keys.length-1])+1;
+    console.log(lastIndex);
+    const post = {
+        "OwnerUserId": session.userid,
+        "CreationDate": new Date(Date.now()).toISOString(),
+        "ParentId": req.body.parentkey,
+        "Score": 0,
+        "Body": req.body.answer,
+        "key": lastIndex
+    }
+    answers[lastIndex] = post;
+    votingAnswersDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
+    res.redirect("/question/" + req.body.parentkey)
 })
 
 app.get('/register.html', function (req, res) {
@@ -158,7 +180,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
         if (!(e in votingAnswersDictionary)){
             votingAnswersDictionary[e] = {"upVotes": 0, "downVotes": 0}
         }
-        if (answers[e].ParentId === parseInt(req.params.qid)){
+        if (parseInt(answers[e].ParentId) === parseInt(req.params.qid)){
             answers[e].key = e
             answer.push(answers[e]);
         }

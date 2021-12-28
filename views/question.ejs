@@ -96,6 +96,27 @@
             <% } %>
 
 </div>
+    <% if(!loggedIn){ %>
+        <p class="error">Log in to post a question <a href="../login.html">Click here</a></p>
+    <div class="blur">
+        <% } %>
+        <form method="POST" action="/postNewAnswer">
+            <div class="container">
+                <hr>
+                <label for="answer"><b>Answer</b></label>
+                <input type="hidden" name="parentkey" value="<%= question.key %>" />
+                <textarea rows="4" cols="40"name="answer" id="answer" required
+                <% if(!loggedIn){ %>
+                          readonly
+                        <% } %>
+                ></textarea>
+                <hr>
+                <button type="submit" class="registerbtn">Submit your answer</button>
+            </div>
+        </form>
+        <% if(!loggedIn){ %>
+    </div>
+    <% } %>
 
 
 <footer><a href="about.html">Who are we?</a></footer>
