@@ -38,8 +38,9 @@
     <aside>
         <h4>Similar Topics</h4>
         <ul>
-            <li>1</li>
-            <li>2</li>
+            <% for(var i = 0; i < similarQuestion.length; i++){ %>
+                <li><a href="/question/<%= similarQuestion[i].key %>"> <%= similarQuestion[i].head %> </a></li>
+            <% } %>
         </ul>
     </aside>
     <div>

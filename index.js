@@ -10,9 +10,12 @@ const app = express()
 app.set('view engine', 'ejs');
 
 
-var users = [{"username": "d", "password": "d"}]
+var users = []
 
 var currentUsers = []
+
+var userPerQuestion = {}
+var userPerAnswers = {}
 
 var activeSession = false; //TODO change back to false
 
@@ -178,6 +181,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
     let question = questions[req.params.qid]
     let keys = Object.keys(answers);
     let answer = [];
+    var similarQuestions = [{"key": 2, "head": "awesome"}]
     keys.forEach((e) => {
         if (!(e in votingAnswersDictionary)){
             votingAnswersDictionary[e] = {"upVotes": 0, "downVotes": 0}
@@ -192,7 +196,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
         return
     }
     //getSimilarQuestion
-    res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary, loggedIn: activeSession}) //TODO change to active session
+    res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary,similarQuestion: similarQuestions,  loggedIn: activeSession}) //TODO change to active session
 })
 
 
@@ -204,10 +208,19 @@ app.post("/vote", urlencodeParser, (req, res) => {
         res.redirect("/index.html")
         return
     }
+    if (!(key in userPerQuestion)){
+        userPerQuestion[key] = []
+    }
+    if (userPerQuestion[key].includes(session.userid)){
+        res.redirect("/index.html")
+        return;
+    }
     if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
         votingQuestionsDictionary[key].upVotes += 1
+
     } else
         votingQuestionsDictionary[key].downVotes += 1;
+    userPerQuestion[key].push(session.userid);
     res.redirect("/index.html")
     return
 })
@@ -220,6 +233,14 @@ app.post("/Ansvote", urlencodeParser, (req, res) => {
         res.redirect("/question/"+redirectQuestion)
         return
     }
+    if (!(key in userPerAnswers)){
+        userPerAnswers[key] = []
+    }
+    let redirectQuestion = ((!isNaN(parentKey)) ? parentKey : key);
+    if (userPerAnswers[key].includes(session.userid)){
+        res.redirect("/question/"+redirectQuestion)
+        return;
+    }
     if (req.body.upvoteAns !== undefined &&req.body.upvoteAns.toString().includes("Upvote")) {
         votingAnswersDictionary[key].upVotes += 1
     }else if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
@@ -230,7 +251,7 @@ app.post("/Ansvote", urlencodeParser, (req, res) => {
     else  {
         votingAnswersDictionary[key].downVotes += 1
     }
-    let redirectQuestion = ((!isNaN(parentKey)) ? parentKey : key);
+    userPerAnswers[key].push(session.userid);
     res.redirect("/question/"+redirectQuestion)
     return
 
