@@ -1,5 +1,6 @@
 express = require('express')
 const path = require('path');
+//const backgroundAlex;
 const bodyParser = require('body-parser');
 const sessions = require('express-session');
 const fs = require('fs');
@@ -173,10 +174,6 @@ app.get('/index.html', function (req, res) {
     res.render("index", {loggedIn: false, text: indexData, voting: votingQuestionsDictionary});
 });
 
-app.get("/search", urlencodeParser, (req, res) => {
-    console.log(req.body.search)
-})
-
 app.get("/question/:qid", urlencodeParser, (req, res) => {
     let question = questions[req.params.qid]
     let keys = Object.keys(answers);
@@ -194,6 +191,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
         res.redirect("../index.html")
         return
     }
+    //getSimilarQuestion
     res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary, loggedIn: activeSession}) //TODO change to active session
 })
 
@@ -263,15 +261,23 @@ function readData(questionsTxt, answersTxt) {
         console.error(err)
     }
 }
+//TODO catch query request from html
+app.post("/search", urlencodeParser, (req, res) => {
+    console.log("hello")
+    console.log(req.body.search)
+    return
+})
 
 app.listen(3000, () => {
     //var vecQuestionModel = "t";
     //var vecAnswersModel =
+    //background.process();
     readData(questionsJsonFile, answersJsonFile)
     console.log(`Example app listening at http://localhost:3000`);
 });
 
-
+//TODO for the future, we dont rerender the whole modle as it would need to much time
+//Will be done in future from Alex ;)
 function readAndAddToFile(post, file){
     try {
         const data = fs.readFileSync(file, 'utf8')

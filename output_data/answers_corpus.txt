@@ -1,0 +1,5 @@
+the r project http www r project org r is valuable and significant because it was the first widely accepted open source alternative to big box packages it's mature well supported and a standard within many scientific communities some reasons why it is useful and valuable there are some nice tutorials here 
+incanter is a clojure based r like platform environment libraries for statistical computing and graphics 
+see my response to datasets for running statistical analysis on in reference to datasets in r 
+machine learning seems to have its basis in the pragmatic a practical observation or simulation of reality even within statistics mindless checking of models and assumptions can lead to discarding methods that are useful for example years ago the very first commercially available and working bankruptcy model implemented by the credit bureaus was created through a plain old linear regression model targeting a outcome technically that's a bad approach but practically it worked 
+i second that jay why is r valuable here's a short list of reasons http www inside r org why use r also check out ggplot a very nice graphics package for r some nice tutorials here 
