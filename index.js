@@ -1,5 +1,6 @@
 express = require('express')
 const path = require('path');
+//const backgroundAlex;
 const bodyParser = require('body-parser');
 const sessions = require('express-session');
 const fs = require('fs');
@@ -13,11 +14,20 @@ var users = []
 
 var currentUsers = []
 
+var userPerQuestion = {}
+var userPerAnswers = {}
+
+var activeSession = false; //TODO change back to false
+
 var urlencodeParser = bodyParser.urlencoded({extended: false})
 
 const oneDay = 1000 * 60 * 60 * 24;
 
-var votingDictionary = {}
+var votingQuestionsDictionary = {}
+var votingAnswersDictionary = {}
+
+var questionsJsonFile = "./input_data/Questions.json"
+var answersJsonFile = "./input_data/Answers.json"
 
 //session middleware
 app.use(sessions({
@@ -55,6 +65,7 @@ app.post('/loginUser', urlencodeParser, (req, res) => {
         if (k.password === req.body.password && k.username === req.body.username) {
             session = req.session;
             session.userid = req.body.username;
+            activeSession = true
             res.redirect("/index.html")
             found = true;
             return
@@ -66,16 +77,72 @@ app.post('/loginUser', urlencodeParser, (req, res) => {
     res.render("login", {error: true, loggedIn: false});
 })
 
+app.post('/postNewQuestion', urlencodeParser, (req, res) => {
+    if (!req.body || req.body.title === "" ||
+        req.body.question === "") {
+        res.redirect("new", { loggedIn: activeSession});
+        return
+    }
+    let keys = Object.keys(questions);
+    let lastIndex = parseInt(keys[keys.length-1])+1;
+    console.log(lastIndex);
+    const post = {
+        "OwnerUserId": session.userid,
+        "CreationDate": new Date(Date.now()).toISOString(),
+        "Score": 0,
+        "Title": req.body.title,
+        "Body": req.body.question,
+        "key": lastIndex
+    }
+    questions[lastIndex] = post;
+    readAndAddToFile(post, questionsJsonFile)
+    votingQuestionsDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
+
+    res.redirect("/question/"+lastIndex);
+})
+
+app.post('/postNewAnswer', urlencodeParser, (req, res) => {
+    if (!req.body || req.body.answer === "") {
+        var test = req.body.parentkey
+        res.redirect("/question/" + req.body.parentkey);
+        return
+    }
+    let keys = Object.keys(answers);
+    let lastIndex = parseInt(keys[keys.length-1])+1;
+    console.log(lastIndex);
+    const post = {
+        "OwnerUserId": session.userid,
+        "CreationDate": new Date(Date.now()).toISOString(),
+        "ParentId": parseInt(req.body.parentkey),
+        "Score": 0,
+        "Body": req.body.answer,
+        "key": lastIndex
+    }
+    answers[lastIndex] = post;
+    readAndAddToFile(post, answersJsonFile)
+    votingAnswersDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
+    res.redirect("/question/" + req.body.parentkey)
+})
+
 app.get('/register.html', function (req, res) {
-    activeSession = false
     if (session && session.userid) {
         activeSession = true;
     }
     res.render("register", {error: false, loggedIn: activeSession});
 });
 
+
+
+app.get('/new.html', function (req, res) {
+    if (session && session.userid) {
+        activeSession = true;
+    }
+    res.render("new", { loggedIn: activeSession});
+});
+
 app.get('/logout.html', function (req, res) {
     session = undefined;
+    activeSession = false
     res.redirect("index.html");
 });
 
@@ -87,6 +154,11 @@ app.get('/login.html', function (req, res) {
     res.render("login", {error: false, loggedIn: activeSession});
 });
 
+
+app.get('/', function (req, res){
+    res.redirect("index.html")
+})
+
 app.get('/index.html', function (req, res) {
     let keys = Object.keys(questions);
     let indexData = [];
@@ -94,35 +166,41 @@ app.get('/index.html', function (req, res) {
         questions[keys[i]].key = keys[i]
         indexData.push(questions[keys[i]])
         let index = parseInt(keys[i])
-        if (!(index in votingDictionary)){
-            votingDictionary[index] = {"upVotes": 0, "downVotes": 0}
+        if (!(index in votingQuestionsDictionary)){
+            votingQuestionsDictionary[index] = {"upVotes": 0, "downVotes": 0}
         }
     }
     if (session && session.userid) {
-        res.render("index", {loggedIn: true, text: indexData, voting: votingDictionary});
+        res.render("index", {loggedIn: true, text: indexData, voting: votingQuestionsDictionary});
         return
     }
-    res.render("index", {loggedIn: false, text: indexData, voting: votingDictionary});
+    res.render("index", {loggedIn: false, text: indexData, voting: votingQuestionsDictionary});
 });
-
-app.get("/search", urlencodeParser, (req, res) => {
-    console.log(req.body.search)
-})
 
 app.get("/question/:qid", urlencodeParser, (req, res) => {
     let question = questions[req.params.qid]
-    console.log(question)
     let keys = Object.keys(answers);
     let answer = [];
+    var similarQuestions = [{"key": 2, "head": "awesome"}]
     keys.forEach((e) => {
-        if (answers[e].ParentId === parseInt(req.params.qid)){
+        if (!(e in votingAnswersDictionary)){
+            votingAnswersDictionary[e] = {"upVotes": 0, "downVotes": 0}
+        }
+        if (parseInt(answers[e].ParentId) === parseInt(req.params.qid)){
             answers[e].key = e
-            console.log(answers[e]["key"])
             answer.push(answers[e]);
         }
     })
-    res.render("question", {question: question, answers: answer, loggedIn: false}) //TODO change to active session
+    if (!Object.keys(votingAnswersDictionary).length || !Object.keys(votingQuestionsDictionary).length) {
+        res.redirect("../index.html")
+        return
+    }
+    //getSimilarQuestion
+    res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary,similarQuestion: similarQuestions,  loggedIn: activeSession}) //TODO change to active session
 })
+
+
+
 
 app.post("/vote", urlencodeParser, (req, res) => {
     let key = parseInt(req.body.key)
@@ -130,11 +208,51 @@ app.post("/vote", urlencodeParser, (req, res) => {
         res.redirect("/index.html")
         return
     }
+    if (!(key in userPerQuestion)){
+        userPerQuestion[key] = []
+    }
+    if (userPerQuestion[key].includes(session.userid)){
+        res.redirect("/index.html")
+        return;
+    }
     if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
-        votingDictionary[key].upVotes += 1
+        votingQuestionsDictionary[key].upVotes += 1
+
     } else
-        votingDictionary[key].downVotes += 1;
+        votingQuestionsDictionary[key].downVotes += 1;
+    userPerQuestion[key].push(session.userid);
     res.redirect("/index.html")
+    return
+})
+
+app.post("/Ansvote", urlencodeParser, (req, res) => {
+    let key = parseInt(req.body.key)
+    let parentKey = parseInt(req.body.parentkey)
+    if (!activeSession){
+        let redirectQuestion = ((!isNaN(parentKey)) ? parentKey : key);
+        res.redirect("/question/"+redirectQuestion)
+        return
+    }
+    if (!(key in userPerAnswers)){
+        userPerAnswers[key] = []
+    }
+    let redirectQuestion = ((!isNaN(parentKey)) ? parentKey : key);
+    if (userPerAnswers[key].includes(session.userid)){
+        res.redirect("/question/"+redirectQuestion)
+        return;
+    }
+    if (req.body.upvoteAns !== undefined &&req.body.upvoteAns.toString().includes("Upvote")) {
+        votingAnswersDictionary[key].upVotes += 1
+    }else if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
+        votingQuestionsDictionary[key].upVotes += 1
+    } else if(req.body.downvote !== undefined &&req.body.downvote.toString().includes("Downvote")){
+        votingQuestionsDictionary[key].downVotes += 1;
+    }
+    else  {
+        votingAnswersDictionary[key].downVotes += 1
+    }
+    userPerAnswers[key].push(session.userid);
+    res.redirect("/question/"+redirectQuestion)
     return
 
 
@@ -163,13 +281,40 @@ function readData(questionsTxt, answersTxt) {
     } catch (err) {
         console.error(err)
     }
-
 }
+//TODO catch query request from html
+app.post("/search", urlencodeParser, (req, res) => {
+    console.log("hello")
+    console.log(req.body.search)
+    return
+})
 
 app.listen(3000, () => {
-    var questions_json = "./input_data/Questions.json"
-    var answers_json = "./input_data/Answers.json"
-    readData(questions_json, answers_json)
-
+    //var vecQuestionModel = "t";
+    //var vecAnswersModel =
+    //background.process();
+    readData(questionsJsonFile, answersJsonFile)
     console.log(`Example app listening at http://localhost:3000`);
 });
+
+//TODO for the future, we dont rerender the whole modle as it would need to much time
+//Will be done in future from Alex ;)
+function readAndAddToFile(post, file){
+    try {
+        const data = fs.readFileSync(file, 'utf8')
+        tmpFile = JSON.parse(data)
+        let tmpEntry = post.key
+        delete post.key
+        tmpFile[tmpEntry] = post
+        let json = JSON.stringify(tmpFile, null, 4);
+        try {
+            fs.writeFileSync(file, json)
+            //file written successfully
+        } catch (err) {
+            console.error(err)
+        }
+    } catch (err) {
+        console.error(err)
+    }
+
+}

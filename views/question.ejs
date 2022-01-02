@@ -7,62 +7,77 @@
 </head>
 <body>
 <div class="navbar">
-    <a href="index.html">Home</a>
-    <a href="question.html" class="current">Question</a>
-    <a href="new.html">New</a>
-    <a href="about.html">About</a>
+    <a href="../index.html">Home</a>
+    <a href="../question.html" class="current">Question</a>
+    <a href="../new.html">New</a>
+    <a href="../about.html">About</a>
 
-    <a href="<%if(loggedIn){%>
-        logout.html
-        <%} else{%>
-        login.html
-        <%}%>" class="setUp current"><%if(loggedIn){%>
+    <a href="<% if(loggedIn){ %>
+        ../logout.html
+        <% } else{ %>
+        ../login.html
+        <% } %>" class="setUp ">
+        <% if(loggedIn){ %>
             LogOut
-        <%} else{%>
+        <% } else{ %>
             LogIn
-        <%}%></a>
-    <a href="register.html" class="setUp">Register</a>
+        <% } %>
+    </a>
+    <a href="../register.html" class="setUp">Register</a>
     <div class="search-container">
-        <form action="/search">
+        <form action="../search">
             <input type="text" placeholder="Search.." name="search">
         </form>
     </div>
 </div>
 <header>Your Question</header> <!--TODO make nice header with title-->
-<div>
-        <p></p>
-        <p></p>
-        <div>
-            <div class="card">
-                <div class="card-body">
-                    <div>
-                        <div>
-                            <h5><a href="/question/<%= question.key %>"><%= question.Title %></a></h5>
-                            <div>
-                                <%-question.Body%>
-                            </div>
-                            <div class="voting-container">
-                                <!--ToDo connect it with counter and add to js-->
-                                <form action="/vote" method="post">
-                                    <input type="hidden" name="key" value="<%= question.key %>" />
-                                    <input type="submit" name="upvote" value="Upvote " />
-                                </form>
 
-                                <form action="/vote" method="post">
-                                    <input type="hidden" name="key" value="<%= question.key %>" />
-                                    <input type="submit" name="downvote" value="Downvote " />
-                                </form>
-                            </div>
+<div>
+    <p></p>
+    <p></p>
+    <aside>
+        <h4>Similar Topics</h4>
+        <ul>
+            <% for(var i = 0; i < similarQuestion.length; i++){ %>
+                <li><a href="/question/<%= similarQuestion[i].key %>"> <%= similarQuestion[i].head %> </a></li>
+            <% } %>
+        </ul>
+    </aside>
+    <div>
+        <div class="cardquestion">
+            <div class="card-body">
+                <div>
+                    <div>
+                        <h5><a href="/question/<%= question.key %>"><%= question.Title %></a></h5>
+                        <h6>Created on <%= question.CreationDate %></h6>
+                        <h6>Created by User <%= question.OwnerUserId %></h6>
+                        <div>
+                            <%- question.Body %>
+                        </div>
+                        <div class="voting-container">
+                            <!--ToDo connect it with counter and add to js-->
+                            <form action="/Ansvote" method="post">
+                                <input type="hidden" name="key" value="<%= question.key %>"/>
+                                <input type="submit" name="upvote"
+                                       value="Upvote <%= questVoting[parseInt(question.key)].upVotes %>"/>
+                            </form>
+
+                            <form action="/Ansvote" method="post">
+                                <input type="hidden" name="key" value="<%= question.key %>"/>
+                                <input type="submit" name="downvote"
+                                       value="Downvote <%= questVoting[parseInt(question.key)].downVotes %>"/>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <% for(var i = 0; i < answers.length; i++){ %>
-                <p></p>
-                <p></p>
+        <% for(var i = 0; i < answers.length; i++){ %>
+            <p></p>
+            <p></p>
             <div>
-                <div class="card">
+                <div class="cardquestion">
                     <div class="card-body">
                         <div>
                             <div>
@@ -70,16 +85,22 @@
                                 <h6>Created on <%= answers[i].CreationDate %></h6>
                                 <h6>Created by User <%= answers[i].OwnerUserId %></h6>
                                 <div>
-                                    <%-answers[i].Body%>
+                                    <%- answers[i].Body %>
                                 </div>
                                 <div class="voting-container">
                                     <!--ToDo connect it with counter and add to js-->
-                                    <form action="/vote" method="post">
-                                        <input type="hidden" name="key" value="<%= answers[i].key %>" />
+                                    <form action="/Ansvote" method="post">
+                                        <input type="hidden" name="parentkey" value="<%= question.key %>"/>
+                                        <input type="hidden" name="key" value="<%= answers[i].key %>"/>
+                                        <input type="submit" name="upvoteAns"
+                                               value="Upvote <%= ansVoting[parseInt(answers[i].key)].upVotes %>"/>
                                     </form>
 
-                                    <form action="/vote" method="post">
-                                        <input type="hidden" name="key" value="<%= answers[i].key %>" />
+                                    <form action="/Ansvote" method="post">
+                                        <input type="hidden" name="parentkey" value="<%= question.key %>"/>
+                                        <input type="hidden" name="key" value="<%= answers[i].key %>"/>
+                                        <input type="submit" name="downvoteAns"
+                                               value="Downvote <%= ansVoting[parseInt(answers[i].key)].downVotes %>"/>
                                     </form>
                                 </div>
                             </div>
@@ -87,11 +108,30 @@
                     </div>
                 </div>
             </div>
-            <% } %>
+        <% } %>
+    </div>
+    <% if(!loggedIn){ %>
+        <p class="error">Log in to post a question <a href="../login.html">Click here</a></p>
+    <div class="blur">
+        <% } %>
+        <form method="POST" action="/postNewAnswer">
+            <div class="containeranswer">
+                <hr>
+                <label for="answer"><b>Answer</b></label>
+                <input type="hidden" name="parentkey" value="<%= question.key %>"/>
+                <textarea rows="4" cols="40" name="answer" id="answer" required
+                <% if(!loggedIn){ %>
+                          readonly
+                        <% } %>
+                ></textarea>
+                <hr>
+                <button type="submit" class="registerbtn">Submit your answer</button>
+            </div>
+        </form>
+        <% if(!loggedIn){ %>
+    </div>
+    <% } %>
 
-</div>
-
-
-<footer><a href="about.html">Who are we?</a></footer>
+    <footer><a href="about.html">Who are we?</a></footer>
 </body>
 </html>

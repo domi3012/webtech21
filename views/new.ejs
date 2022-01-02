@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="question.html">Question</a>
+    <a href="new.html" class="current">New</a>
+    <a href="about.html">About</a>
+
+    <a href="<% if(loggedIn){ %>
+        logout.html
+        <% } else{ %>
+        login.html
+        <% } %>" class="setUp">
+        <% if(loggedIn){ %>
+            LogOut
+        <% } else{ %>
+            LogIn
+        <% } %>
+    </a>
+    <a href="register.html" class="setUp">Register</a>
+    <div class="search-container">
+        <form action="/search">
+            <input type="text" placeholder="Search.." name="search">
+        </form>
+    </div>
+</div>
+<header>Here you can ask a new question</header>
+
+<% if(!loggedIn){ %>
+    <p class="error">Log in to post a question <a href="login.html">Click here</a></p>
+<div class="blur">
+    <% } %>
+    <form method="POST" action="/postNewQuestion">
+        <div class="container">
+            <hr>
+            <label for="title"><b>Title</b></label>
+            <input type="text" name="title" id="title" required
+            <% if(!loggedIn){ %>
+                   readonly
+                    <% } %>
+            >
+
+            <label for="question"><b>Question</b></label>
+            <textarea rows="4" cols="50"name="question" id="question" required
+            <% if(!loggedIn){ %>
+                      readonly
+                    <% } %>
+            ></textarea>
+            <hr>
+            <button type="submit" class="registerbtn">Submit your question</button>
+        </div>
+    </form>
+    <% if(!loggedIn){ %>
+</div>
+<% } %>
+</body>
+</html>

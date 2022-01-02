@@ -34,12 +34,26 @@
 .container {
     padding: 16px;
 }
+.containeranswer {
+    padding: 16px;
+    margin-right: 13rem;
+}
 
 /* Full-width input fields */
 input[type=text], input[type=password] {
     width: 100%;
     padding: 15px;
     margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
+textarea {
+    width: 100%;
+    padding: 15px;
+    height: 500px;
+    resize: none;
+    top: 0;
     display: inline-block;
     border: none;
     background: #f1f1f1;
@@ -101,15 +115,26 @@ header {
 }
 
 
-.card {
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
-}
 
 .card {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
     position: relative;
     display: flex;
     flex-direction: column;
     min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+.cardquestion {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-right: 13rem;
     word-wrap: break-word;
     background-color: #fff;
     background-clip: border-box;
@@ -149,5 +174,22 @@ footer {
 
 .voting-container {
     float: right;
+}
+
+
+.blur {
+    filter:url(#wherearemyglasses);
+    /* ^ for Firefox */
+    -webkit-filter: blur(6px);
+    /* ^ Webkit browsers */
+    filter: blur(6px);
+}
+aside {
+    width: 10%;
+    padding-left: 15px;
+    margin-left: 10px;
+    float: right;
+    font-style: italic;
+    background-color: rgba(0,0,0,.1);
 }
 
