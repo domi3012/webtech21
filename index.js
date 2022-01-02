@@ -1,14 +1,28 @@
-express = require('express')
-const path = require('path');
-//const backgroundAlex;
-const bodyParser = require('body-parser');
-const sessions = require('express-session');
-const fs = require('fs');
+// express = require('express')
+import express from "express"
+
+// const path = require('path');
+import path from "path"
+
+// const bodyParser = require('body-parser');
+import bodyParser from "body-parser"
+
+// const sessions = require('express-session');
+import sessions from "express-session";
+
+// const fs = require('fs');
+import fs from "fs"
 const fsPromises = fs.promises;
+
+import * as background from "./background.js";
+
+
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express()
 app.set('view engine', 'ejs');
-
 
 var users = []
 
@@ -181,7 +195,19 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
     let question = questions[req.params.qid]
     let keys = Object.keys(answers);
     let answer = [];
-    var similarQuestions = [{"key": 2, "head": "awesome"}]
+
+    var similarQuestionsIds = background.getSimilarQuestions(req.params.qid)
+
+    var similarQuestions = new Map()
+
+    for(const id in similarQuestionsIds)
+    {
+        let idStr = similarQuestionsIds[id].word
+        let idInt = Number(idStr)
+        let q = questions[idInt]
+        similarQuestions.set(idStr, q.Title)
+    }
+
     keys.forEach((e) => {
         if (!(e in votingAnswersDictionary)){
             votingAnswersDictionary[e] = {"upVotes": 0, "downVotes": 0}
@@ -195,8 +221,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
         res.redirect("../index.html")
         return
     }
-    //getSimilarQuestion
-    res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary,similarQuestion: similarQuestions,  loggedIn: activeSession}) //TODO change to active session
+    res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary,similarQuestion: similarQuestions,  loggedIn: activeSession})
 })
 
 
@@ -258,9 +283,9 @@ app.post("/Ansvote", urlencodeParser, (req, res) => {
 
 })
 
-
 app.get('/style.css', function (req, res) {
     res.sendFile(__dirname + "/" + "style.css");
+    // res.sendFile("/style.css");
 });
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/html/404.html'))

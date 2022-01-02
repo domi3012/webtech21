@@ -38,9 +38,9 @@
     <aside>
         <h4>Similar Topics</h4>
         <ul>
-            <% for(var i = 0; i < similarQuestion.length; i++){ %>
-                <li><a href="/question/<%= similarQuestion[i].key %>"> <%= similarQuestion[i].head %> </a></li>
-            <% } %>
+            <% similarQuestion.forEach((value, key) => { %>
+                <li><a href="/question/<%= key %>"> <%= value %> </a></li>
+            <% }) %>
         </ul>
     </aside>
     <div>

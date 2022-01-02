@@ -1,14 +1,20 @@
 "use strict";
 // In this file, we write a background script to convert documents to embeddings
 // We use the word2vec library for the computation of the word vectors
-const fs = require('fs');
+// const fs = require('fs');
+import fs from "fs"
 const fsPromises = fs.promises;
-const w2v = require('word2vec');
-const WordVector = require('word2vec/lib/WordVector');
+// const w2v = require('word2vec');
+import w2v from "word2vec"
+
+// const WordVector = require('word2vec/lib/WordVector');
+import WordVector from "word2vec/lib/WordVector.js";
 const word_vectors_length = 100;
 let order = [];
 let questions_document_embeddings = "./output_data/questions_document_embeddings.txt"
 var questions_word_vectors = "./output_data/questions_word_vectors.txt"
+
+var questions_embeddings_model;
 
 // =============================================================================
 
@@ -161,22 +167,23 @@ async function process() {
         // create document embeddings for all answers
         createEmbeddings(corpusQuestions, model, questions_document_embeddings);
     });
-}
 
-
-// =============================================================================
-process();
-getSimilarQuestions(1)
-
-
-
-function getSimilarQuestions(input) {
     w2v.loadModel(questions_document_embeddings, function (error, model) {
         if (error) {
             console.error(error);
             return;
         }
-        console.log(model.mostSimilar('6', 5));
+        questions_embeddings_model = model;
     });
 }
 
+
+// =============================================================================
+
+process();
+
+function getSimilarQuestions(input) {
+    return questions_embeddings_model.mostSimilar(input, 2);
+}
+
+export {getSimilarQuestions, preprocess}
