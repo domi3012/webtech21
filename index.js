@@ -188,7 +188,6 @@ app.get('/about.html', function (req, res) {
 
 app.get('/index.html', function (req, res) {
     let indexData = [];
-    let keys = Object.keys(questions);
     if (searchQuery === "") {
 
         for (let i = 0; i < 5; i++) {
@@ -196,18 +195,25 @@ app.get('/index.html', function (req, res) {
         }
         searchQuery = "";
     } else {
+        var questionsIndex = [];
         var queryQuestionsIds = background.getSimilarQuestionsFromQuery(searchQuery)
         for (const key in queryQuestionsIds) {
             if (queryQuestionsIds[key].word === undefined) continue;
             let idStr = queryQuestionsIds[key].word
             let idInt = Number(idStr)
             questions[idInt].key = idStr;
-            indexData.push(questions[idInt])
+            questionsIndex.push(idStr);
         }
+        questionsIndex.sort(function (a,b){
+            return mostlyRated.indexOf(a) - mostlyRated.indexOf(b);
+        })
+        for (const index in questionsIndex){
+            indexData.push(questions[Number(questionsIndex[index])]);
+        }
+
         if (indexData.length === 0) {
             for (let i = 0; i < 5; i++) {
-                questions[keys[i]].key = keys[i]
-                indexData.push(questions[keys[i]])
+                indexData.push(questions[mostlyRated[i]])
             }
         }
     }
@@ -375,7 +381,7 @@ function initialize() {
         questions[index].key = index;
     }
 
-    mostlyRated.sort(function(a, b) {
+    mostlyRated.sort(function (a, b) {
         return questions[b].Score - questions[a].Score;
     });
     let keys = Object.keys(answers);
