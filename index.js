@@ -13,6 +13,8 @@ import sessions from "express-session";
 // const fs = require('fs');
 import fs from "fs"
 
+import ProgressBar from 'progress';
+
 const fsPromises = fs.promises;
 
 import * as background from "./background.js";
@@ -348,22 +350,35 @@ app.listen(3000, () => {
     -------------------------
     */
     background.initilize();
+    waitForInitilization();
     readData(questionsJsonFile, answersJsonFile)
     initialize()
     console.log(`Example app listening at http://localhost:3000`);
 });
 
+function waitForInitilization(){
+    var bar = new ProgressBar(':bar', { total: 10 });
+    var timer = setInterval(function () {
+        bar.tick();
+        if (background.questions_vector_model !== undefined) {
+            clearInterval(timer);
+        }
+    }, 100);
+}
+
 function initialize(){
     let keys = Object.keys(questions);
     for (const key in keys) {
         let index = parseInt(keys[key])
-        votingQuestionsDictionary[index] = {"upVotes": questions[index].Score, "downVotes": 0}
+        votingQuestionsDictionary[index] = {"upVotes": questions[index].Score >= 0 ? questions[index].Score : 0,
+            "downVotes": questions[index].Score < 0 ? -questions[index].Score : 0}
         questions[index].key = index;
     }
     keys = Object.keys(answers);
     for (const key in keys) {
         let index = parseInt(keys[key])
-        votingAnswersDictionary[index] = {"upVotes": answers[index].Score, "downVotes": 0}
+        votingAnswersDictionary[index] = {"upVotes": answers[index].Score >= 0 ? answers[index].Score : 0,
+            "downVotes": answers[index].Score < 0 ? -answers[index].Score : 0}
         answers[index].key = index;
     }
 }

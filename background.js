@@ -175,7 +175,7 @@ async function process() {
 
 //process();
 
-function initilize(){
+async function initilize(){
     w2v.loadModel(questions_document_embeddings, function (error, model) {
         if (error) {
             console.error(error);
@@ -213,4 +213,4 @@ function getSimilarQuestionsFromQuery(input) {
             return questions_embeddings_model.getNearestWords(embedding, 20);
 }
 
-export {initilize, getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery}
+export {initilize, getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery, questions_vector_model}
