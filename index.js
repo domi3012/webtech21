@@ -218,7 +218,7 @@ app.get('/index.html', function (req, res) {
 });
 
 app.get("/question/:qid", urlencodeParser, (req, res) => {
-    let question = questions[req.params.qid]
+    let question = questions[Number(req.params.qid)]
     let keys = Object.keys(answers);
     let answer = [];
 
@@ -341,9 +341,13 @@ app.post("/search", urlencodeParser, (req, res) => {
 })
 
 app.listen(3000, () => {
-    //var vecQuestionModel = "t";
-    //var vecAnswersModel =
-    //background.process();
+    /*TODO for Tutors if you want to wait for 5 minutes uncomment the function
+    the output data will be generated from the Answers|Question.json files
+    -------------------------
+    background.process();
+    -------------------------
+    */
+    background.initilize();
     readData(questionsJsonFile, answersJsonFile)
     initialize()
     console.log(`Example app listening at http://localhost:3000`);
@@ -354,11 +358,13 @@ function initialize(){
     for (const key in keys) {
         let index = parseInt(keys[key])
         votingQuestionsDictionary[index] = {"upVotes": questions[index].Score, "downVotes": 0}
+        questions[index].key = index;
     }
     keys = Object.keys(answers);
     for (const key in keys) {
         let index = parseInt(keys[key])
         votingAnswersDictionary[index] = {"upVotes": answers[index].Score, "downVotes": 0}
+        answers[index].key = index;
     }
 }
 

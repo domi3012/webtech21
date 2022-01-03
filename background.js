@@ -168,7 +168,14 @@ async function process() {
         // create document embeddings for all answers
         createEmbeddings(corpusQuestions, model, questions_document_embeddings);
     });
+}
 
+
+// =============================================================================
+
+//process();
+
+function initilize(){
     w2v.loadModel(questions_document_embeddings, function (error, model) {
         if (error) {
             console.error(error);
@@ -185,13 +192,8 @@ async function process() {
     });
 }
 
-
-// =============================================================================
-
-process();
-
 function getSimilarQuestions(input) {
-    return questions_embeddings_model.mostSimilar(input, 2);
+    return questions_embeddings_model.mostSimilar(input, 5);
 }
 
 function getSimilarQuestionsFromQuery(input) {
@@ -208,7 +210,7 @@ function getSimilarQuestionsFromQuery(input) {
                 embedding.values[i] = embedding.values[i] / word_count;
             }
             embedding.word = input;
-            return questions_embeddings_model.getNearestWords(embedding, 2);
+            return questions_embeddings_model.getNearestWords(embedding, 20);
 }
 
-export {getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery}
+export {initilize, getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery}
