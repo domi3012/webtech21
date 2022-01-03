@@ -345,12 +345,12 @@ function initialize(){
     let keys = Object.keys(questions);
     for (const key in keys) {
         let index = parseInt(keys[key])
-        votingQuestionsDictionary[index] = {"upVotes": 0, "downVotes": 0}
+        votingQuestionsDictionary[index] = {"upVotes": questions[index].Score, "downVotes": 0}
     }
     keys = Object.keys(answers);
     for (const key in keys) {
         let index = parseInt(keys[key])
-        votingAnswersDictionary[index] = {"upVotes": 0, "downVotes": 0}
+        votingAnswersDictionary[index] = {"upVotes": answers[index].Score, "downVotes": 0}
     }
 }
 
