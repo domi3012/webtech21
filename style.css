@@ -36,7 +36,7 @@
 }
 .containeranswer {
     padding: 16px;
-    margin-right: 13rem;
+    margin-right: 26rem;
 }
 
 /* Full-width input fields */
@@ -134,7 +134,7 @@ header {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    margin-right: 13rem;
+    margin-right: 27rem;
     word-wrap: break-word;
     background-color: #fff;
     background-clip: border-box;
