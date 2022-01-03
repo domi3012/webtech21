@@ -3,12 +3,14 @@
 // We use the word2vec library for the computation of the word vectors
 // const fs = require('fs');
 import fs from "fs"
+
 const fsPromises = fs.promises;
 // const w2v = require('word2vec');
 import w2v from "word2vec"
 
 // const WordVector = require('word2vec/lib/WordVector');
 import WordVector from "word2vec/lib/WordVector.js";
+
 const word_vectors_length = 100;
 let order = [];
 let questions_document_embeddings = "./output_data/questions_document_embeddings.txt"
@@ -175,7 +177,7 @@ async function process() {
 
 //process();
 
-async function initilize(){
+function initilize() {
     w2v.loadModel(questions_document_embeddings, function (error, model) {
         if (error) {
             console.error(error);
@@ -193,24 +195,26 @@ async function initilize(){
 }
 
 function getSimilarQuestions(input) {
+    if (questions_vector_model === undefined || questions_embeddings_model === undefined)return;
     return questions_embeddings_model.mostSimilar(input, 5);
 }
 
 function getSimilarQuestionsFromQuery(input) {
-            let word_count = 0;
-            var embedding = new WordVector(input, new Float32Array(word_vectors_length, 0));
-            for (const word of input.split(" ")) {
-                let vector = questions_vector_model.getVector(word)
-                if (vector != null) {
-                    word_count++;
-                    embedding = embedding.add(vector);
-                }
-            }
-            for (let i = 0; i < embedding.values.length; i++) {
-                embedding.values[i] = embedding.values[i] / word_count;
-            }
-            embedding.word = input;
-            return questions_embeddings_model.getNearestWords(embedding, 20);
+    if (questions_vector_model === undefined || questions_embeddings_model === undefined)return;
+    let word_count = 0;
+    var embedding = new WordVector(input, new Float32Array(word_vectors_length, 0));
+    for (const word of input.split(" ")) {
+        let vector = questions_vector_model.getVector(word)
+        if (vector != null) {
+            word_count++;
+            embedding = embedding.add(vector);
+        }
+    }
+    for (let i = 0; i < embedding.values.length; i++) {
+        embedding.values[i] = embedding.values[i] / word_count;
+    }
+    embedding.word = input;
+    return questions_embeddings_model.getNearestWords(embedding, 20);
 }
 
 export {initilize, getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery, questions_vector_model}
