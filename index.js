@@ -37,6 +37,7 @@ let searchQuery = "";
 
 var userPerQuestion = {}
 var userPerAnswers = {}
+var mostlyRated = [];
 
 var activeSession = false; //TODO change back to false
 
@@ -191,21 +192,19 @@ app.get('/index.html', function (req, res) {
     if (searchQuery === "") {
 
         for (let i = 0; i < 5; i++) {
-            questions[keys[i]].key = keys[i]
-            indexData.push(questions[keys[i]])
+            indexData.push(questions[mostlyRated[i]])
         }
-    }else {
+        searchQuery = "";
+    } else {
         var queryQuestionsIds = background.getSimilarQuestionsFromQuery(searchQuery)
         for (const key in queryQuestionsIds) {
             if (queryQuestionsIds[key].word === undefined) continue;
             let idStr = queryQuestionsIds[key].word
             let idInt = Number(idStr)
-            let test = questions[idInt];
             questions[idInt].key = idStr;
             indexData.push(questions[idInt])
         }
-        searchQuery = "";
-        if (indexData.length === 0){
+        if (indexData.length === 0) {
             for (let i = 0; i < 5; i++) {
                 questions[keys[i]].key = keys[i]
                 indexData.push(questions[keys[i]])
@@ -271,7 +270,6 @@ app.post("/vote", urlencodeParser, (req, res) => {
     }
     if (req.body.upvote !== undefined && req.body.upvote.toString().includes("Upvote")) {
         votingQuestionsDictionary[key].upVotes += 1
-
     } else
         votingQuestionsDictionary[key].downVotes += 1;
     userPerQuestion[key].push(session.userid);
@@ -356,8 +354,8 @@ app.listen(3000, () => {
     console.log(`Example app listening at http://localhost:3000`);
 });
 
-function waitForInitilization(){
-    var bar = new ProgressBar(':bar', { total: 10 });
+function waitForInitilization() {
+    var bar = new ProgressBar(':bar', {total: 10});
     var timer = setInterval(function () {
         bar.tick();
         if (background.questions_vector_model !== undefined) {
@@ -366,19 +364,27 @@ function waitForInitilization(){
     }, 100);
 }
 
-function initialize(){
-    let keys = Object.keys(questions);
-    for (const key in keys) {
-        let index = parseInt(keys[key])
-        votingQuestionsDictionary[index] = {"upVotes": questions[index].Score >= 0 ? questions[index].Score : 0,
-            "downVotes": questions[index].Score < 0 ? -questions[index].Score : 0}
+function initialize() {
+    mostlyRated = Object.keys(questions);
+    for (const key in mostlyRated) {
+        let index = parseInt(mostlyRated[key])
+        votingQuestionsDictionary[index] = {
+            "upVotes": questions[index].Score >= 0 ? questions[index].Score : 0,
+            "downVotes": questions[index].Score < 0 ? -questions[index].Score : 0
+        }
         questions[index].key = index;
     }
-    keys = Object.keys(answers);
+
+    mostlyRated.sort(function(a, b) {
+        return questions[b].Score - questions[a].Score;
+    });
+    let keys = Object.keys(answers);
     for (const key in keys) {
         let index = parseInt(keys[key])
-        votingAnswersDictionary[index] = {"upVotes": answers[index].Score >= 0 ? answers[index].Score : 0,
-            "downVotes": answers[index].Score < 0 ? -answers[index].Score : 0}
+        votingAnswersDictionary[index] = {
+            "upVotes": answers[index].Score >= 0 ? answers[index].Score : 0,
+            "downVotes": answers[index].Score < 0 ? -answers[index].Score : 0
+        }
         answers[index].key = index;
     }
 }
