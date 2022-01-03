@@ -15,6 +15,7 @@ let questions_document_embeddings = "./output_data/questions_document_embeddings
 var questions_word_vectors = "./output_data/questions_word_vectors.txt"
 
 var questions_embeddings_model;
+var questions_vector_model;
 
 // =============================================================================
 
@@ -175,6 +176,13 @@ async function process() {
         }
         questions_embeddings_model = model;
     });
+    w2v.loadModel(questions_word_vectors, function (error, model) {
+        if (error) {
+            console.error(error);
+            return;
+        }
+        questions_vector_model = model;
+    });
 }
 
 
@@ -186,4 +194,21 @@ function getSimilarQuestions(input) {
     return questions_embeddings_model.mostSimilar(input, 2);
 }
 
-export {getSimilarQuestions, preprocess}
+function getSimilarQuestionsFromQuery(input) {
+            let word_count = 0;
+            var embedding = new WordVector(input, new Float32Array(word_vectors_length, 0));
+            for (const word of input.split(" ")) {
+                let vector = questions_vector_model.getVector(word)
+                if (vector != null) {
+                    word_count++;
+                    embedding = embedding.add(vector);
+                }
+            }
+            for (let i = 0; i < embedding.values.length; i++) {
+                embedding.values[i] = embedding.values[i] / word_count;
+            }
+            embedding.word = input;
+            return questions_embeddings_model.getNearestWords(embedding, 2);
+}
+
+export {getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery}
