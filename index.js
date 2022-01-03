@@ -175,6 +175,14 @@ app.get('/', function (req, res) {
     res.redirect("index.html")
 })
 
+app.get('/about.html', function (req, res) {
+    if (session && session.userid) {
+        res.render("about", {loggedIn: true});
+        return
+    }
+    res.render("about", {loggedIn: false});
+})
+
 app.get('/index.html', function (req, res) {
     let indexData = [];
     let keys = Object.keys(questions);

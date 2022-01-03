@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AboutUs</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="navbar">
+    <a href="index.html">Home</a>
+    <a>Question</a>
+    <a href="new.html">New</a>
+    <a href="about.html">About</a>
+
+    <a href="<%if(loggedIn){%>
+        logout.html
+        <%} else{%>
+        login.html
+        <%}%>" class="setUp current"><%if(loggedIn){%>
+            LogOut
+        <%} else{%>
+            LogIn
+        <%}%></a>
+    <a href="register.html" class="setUp">Register</a>
+    <div class="search-container">
+        <form method="POST" action="/search">
+            <input type="text" placeholder="Search.." name="search">
+        </form>
+    </div>
+</div>
+<header>What about us</header>
+<div style="margin-left: 5rem">
+    <ul>
+        <li>Alexander Agape</li>
+        <ul>
+            <li>******</li>
+        </ul>
+        <li>Baher El-Banna</li>
+        <ul>
+            <li>11902970</li>
+        </ul>
+        <li>Dominik König</li>
+        <ul>
+            <li>01606345</li>
+        </ul>
+    </ul>
+
+</div>
+
+<footer><a href="about.html">Who are we?</a></footer>
+
+</body>
+</html>
