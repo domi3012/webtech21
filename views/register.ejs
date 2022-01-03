@@ -8,19 +8,21 @@
 <body>
 <div class="navbar">
     <a href="index.html">Home</a>
-    <a href="question.html">Question</a>
+    <a>Question</a>
     <a href="new.html">New</a>
     <a href="about.html">About</a>
 
-    <a href="<%if(loggedIn){%>
+    <a href="<% if(loggedIn){ %>
         logout.html
-        <%} else{%>
+        <% } else{ %>
         login.html
-        <%}%>" class="setUp"><%if(loggedIn){%>
+        <% } %>" class="setUp">
+        <% if(loggedIn){ %>
             LogOut
-        <%} else{%>
+        <% } else{ %>
             LogIn
-        <%}%></a>
+        <% } %>
+    </a>
     <a href="register.html" class="setUp current">Register</a>
     <div class="search-container">
         <form method="POST" action="/search">
@@ -30,9 +32,9 @@
 </div>
 
 <form method="POST" action="/registerUser">
-    <%if(error){%>
+    <% if(error){ %>
         <p class="error">"Invalid registration. Please retry"</p>
-    <%}%>
+    <% } %>
     <div class="container">
         <h1>Register</h1>
         <p>Please fill in this form to create an account.</p>
