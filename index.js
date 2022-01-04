@@ -234,6 +234,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
     var similarQuestions = new Map()
 
     for (const id in similarQuestionsIds) {
+        if(similarQuestionsIds[id].word === undefined) continue;
         let idStr = similarQuestionsIds[id].word
         let idInt = Number(idStr)
         let q = questions[idInt]
