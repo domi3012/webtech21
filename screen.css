@@ -1,0 +1,203 @@
+
+
+/*https://www.w3schools.com/css/css_navbar.asp*/
+/*------------------------------------------------*/
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+}
+
+.navbar a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+.navbar a.current {
+    background-color: #04AA6D;
+    color: white;
+}
+
+.navbar .setUp{
+    float: right;
+}
+/*------------------------------------------------*/
+
+* {box-sizing: border-box}
+
+
+.container {
+    padding: 16px;
+}
+.containeranswer {
+    padding: 16px;
+    margin-right: 26rem;
+}
+
+/*https://www.w3schools.com/css/css_form.asp*/
+/*------------------------------------------------*/
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
+textarea {
+    width: 100%;
+    padding: 15px;
+    height: 500px;
+    resize: none;
+    top: 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+}
+
+
+.registerbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+}
+
+.registerbtn:hover {
+    opacity:1;
+}
+
+a {
+    color: dodgerblue;
+}
+
+/*------------------------------------------------*/
+
+.signin {
+    background-color: #f1f1f1;
+    text-align: center;
+}
+
+.error {
+    border: 1px solid;
+    margin: 10px auto;
+    padding: 15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    max-width: 460px;
+}
+
+header {
+    padding: 10px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+    font-size: 30px;
+}
+
+
+
+.card {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+.cardquestion {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-right: 27rem;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0 solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+
+.card-body {
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 1rem;
+}
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.navbar .search-container {
+    float: right;
+    height: 20px;
+}
+
+.navbar input[type=text] {
+    padding: 6px;
+    margin-top: 8px;
+    font-size: 17px;
+    border: none;
+}
+
+footer {
+    margin-top: auto;
+    min-height: 20px;
+    text-align: center;
+    background-color: #1abc9c;
+}
+
+.voting-container {
+    float: right;
+}
+
+
+.blur {
+    filter:url(#wherearemyglasses);
+    /* ^ for Firefox */
+    -webkit-filter: blur(6px);
+    /* ^ Webkit browsers */
+    filter: blur(6px);
+}
+aside {
+    width: 30%;
+    padding-left: 15px;
+    margin-left: 10px;
+    float: right;
+    font-style: italic;
+    background-color: rgba(0,0,0,.1);
+}
+
+
+@media print {
+   aside, footer { display: none !important; }
+}
+

@@ -12,12 +12,17 @@ import sessions from "express-session";
 
 // const fs = require('fs');
 import fs from "fs"
+
+import ProgressBar from 'progress';
+
 const fsPromises = fs.promises;
 
 import * as background from "./background.js";
 
 
-import { fileURLToPath } from 'url';
+import {fileURLToPath} from 'url';
+import {preprocess} from "./background.js";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -28,8 +33,11 @@ var users = []
 
 var currentUsers = []
 
+var searchQuery = "";
+
 var userPerQuestion = {}
 var userPerAnswers = {}
+var mostlyRated = [];
 
 var activeSession = false; //TODO change back to false
 
@@ -94,12 +102,11 @@ app.post('/loginUser', urlencodeParser, (req, res) => {
 app.post('/postNewQuestion', urlencodeParser, (req, res) => {
     if (!req.body || req.body.title === "" ||
         req.body.question === "") {
-        res.redirect("new", { loggedIn: activeSession});
+        res.redirect("new", {loggedIn: activeSession});
         return
     }
     let keys = Object.keys(questions);
-    let lastIndex = parseInt(keys[keys.length-1])+1;
-    console.log(lastIndex);
+    let lastIndex = parseInt(keys[keys.length - 1]) + 1;
     const post = {
         "OwnerUserId": session.userid,
         "CreationDate": new Date(Date.now()).toISOString(),
@@ -112,7 +119,7 @@ app.post('/postNewQuestion', urlencodeParser, (req, res) => {
     readAndAddToFile(post, questionsJsonFile)
     votingQuestionsDictionary[lastIndex] = {"upVotes": 0, "downVotes": 0}
 
-    res.redirect("/question/"+lastIndex);
+    res.redirect("/question/" + lastIndex);
 })
 
 app.post('/postNewAnswer', urlencodeParser, (req, res) => {
@@ -122,8 +129,7 @@ app.post('/postNewAnswer', urlencodeParser, (req, res) => {
         return
     }
     let keys = Object.keys(answers);
-    let lastIndex = parseInt(keys[keys.length-1])+1;
-    console.log(lastIndex);
+    let lastIndex = parseInt(keys[keys.length - 1]) + 1;
     const post = {
         "OwnerUserId": session.userid,
         "CreationDate": new Date(Date.now()).toISOString(),
@@ -146,12 +152,11 @@ app.get('/register.html', function (req, res) {
 });
 
 
-
 app.get('/new.html', function (req, res) {
     if (session && session.userid) {
         activeSession = true;
     }
-    res.render("new", { loggedIn: activeSession});
+    res.render("new", {loggedIn: activeSession});
 });
 
 app.get('/logout.html', function (req, res) {
@@ -169,20 +174,50 @@ app.get('/login.html', function (req, res) {
 });
 
 
-app.get('/', function (req, res){
+app.get('/', function (req, res) {
     res.redirect("index.html")
 })
 
+app.get('/about.html', function (req, res) {
+    if (session && session.userid) {
+        res.render("about", {loggedIn: true});
+        return
+    }
+    res.render("about", {loggedIn: false});
+})
+
 app.get('/index.html', function (req, res) {
-    let keys = Object.keys(questions);
     let indexData = [];
-    for (let i = 0; i < 5; i++) {
-        questions[keys[i]].key = keys[i]
-        indexData.push(questions[keys[i]])
-        let index = parseInt(keys[i])
-        if (!(index in votingQuestionsDictionary)){
-            votingQuestionsDictionary[index] = {"upVotes": 0, "downVotes": 0}
+    if (req.query.search === undefined) {
+
+        for (let i = 0; i < 5; i++) {
+            indexData.push(questions[mostlyRated[i]])
         }
+        searchQuery = ""
+    } else {
+        var questionsIndex = [];
+        var queryQuestionsIds = background.getSimilarQuestionsFromQuery(req.query.search)
+        for (const key in queryQuestionsIds) {
+            if (queryQuestionsIds[key].word === undefined) continue;
+            let idStr = queryQuestionsIds[key].word
+            let idInt = Number(idStr)
+            questions[idInt].key = idStr;
+            questionsIndex.push(idStr);
+        }
+        questionsIndex.sort(function (a,b){
+            return mostlyRated.indexOf(a) - mostlyRated.indexOf(b);
+        })
+        for (const index in questionsIndex){
+            indexData.push(questions[Number(questionsIndex[index])]);
+        }
+
+        if (indexData.length === 0) {
+            for (let i = 0; i < 5; i++) {
+                indexData.push(questions[mostlyRated[i]])
+            }
+        }
+        res.render("index", {loggedIn: false, text: indexData, voting: votingQuestionsDictionary});
+        return;
     }
     if (session && session.userid) {
         res.render("index", {loggedIn: true, text: indexData, voting: votingQuestionsDictionary});
@@ -192,7 +227,7 @@ app.get('/index.html', function (req, res) {
 });
 
 app.get("/question/:qid", urlencodeParser, (req, res) => {
-    let question = questions[req.params.qid]
+    let question = questions[Number(req.params.qid)]
     let keys = Object.keys(answers);
     let answer = [];
 
@@ -200,8 +235,8 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
 
     var similarQuestions = new Map()
 
-    for(const id in similarQuestionsIds)
-    {
+    for (const id in similarQuestionsIds) {
+        if(similarQuestionsIds[id].word === undefined) continue;
         let idStr = similarQuestionsIds[id].word
         let idInt = Number(idStr)
         let q = questions[idInt]
@@ -209,10 +244,7 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
     }
 
     keys.forEach((e) => {
-        if (!(e in votingAnswersDictionary)){
-            votingAnswersDictionary[e] = {"upVotes": 0, "downVotes": 0}
-        }
-        if (parseInt(answers[e].ParentId) === parseInt(req.params.qid)){
+        if (parseInt(answers[e].ParentId) === parseInt(req.params.qid)) {
             answers[e].key = e
             answer.push(answers[e]);
         }
@@ -221,71 +253,79 @@ app.get("/question/:qid", urlencodeParser, (req, res) => {
         res.redirect("../index.html")
         return
     }
-    res.render("question", {question: question, answers: answer,ansVoting: votingAnswersDictionary, questVoting: votingQuestionsDictionary,similarQuestion: similarQuestions,  loggedIn: activeSession})
+    res.render("question", {
+        question: question,
+        answers: answer,
+        ansVoting: votingAnswersDictionary,
+        questVoting: votingQuestionsDictionary,
+        similarQuestion: similarQuestions,
+        loggedIn: activeSession
+    })
 })
-
-
 
 
 app.post("/vote", urlencodeParser, (req, res) => {
     let key = parseInt(req.body.key)
-    if (!activeSession){
+    if (!activeSession) {
         res.redirect("/index.html")
         return
     }
-    if (!(key in userPerQuestion)){
+    if (!(key in userPerQuestion)) {
         userPerQuestion[key] = []
     }
-    if (userPerQuestion[key].includes(session.userid)){
+    if (userPerQuestion[key].includes(session.userid)) {
         res.redirect("/index.html")
         return;
     }
-    if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
+    if (req.body.upvote !== undefined && req.body.upvote.toString().includes("Upvote")) {
         votingQuestionsDictionary[key].upVotes += 1
-
     } else
         votingQuestionsDictionary[key].downVotes += 1;
     userPerQuestion[key].push(session.userid);
-    res.redirect("/index.html")
+    if (searchQuery !== undefined){
+        res.redirect("index.html/?search=" + searchQuery);
+    }
+    else {
+        res.redirect("/index.html")
+    }
     return
 })
 
 app.post("/Ansvote", urlencodeParser, (req, res) => {
     let key = parseInt(req.body.key)
     let parentKey = parseInt(req.body.parentkey)
-    if (!activeSession){
+    if (!activeSession) {
         let redirectQuestion = ((!isNaN(parentKey)) ? parentKey : key);
-        res.redirect("/question/"+redirectQuestion)
+        res.redirect("/question/" + redirectQuestion)
         return
     }
-    if (!(key in userPerAnswers)){
+    if (!(key in userPerAnswers)) {
         userPerAnswers[key] = []
     }
     let redirectQuestion = ((!isNaN(parentKey)) ? parentKey : key);
-    if (userPerAnswers[key].includes(session.userid)){
-        res.redirect("/question/"+redirectQuestion)
+    if (userPerAnswers[key].includes(session.userid)) {
+        res.redirect("/question/" + redirectQuestion)
         return;
     }
-    if (req.body.upvoteAns !== undefined &&req.body.upvoteAns.toString().includes("Upvote")) {
+    if (req.body.upvoteAns !== undefined && req.body.upvoteAns.toString().includes("Upvote")) {
         votingAnswersDictionary[key].upVotes += 1
-    }else if (req.body.upvote !== undefined &&req.body.upvote.toString().includes("Upvote")) {
+    } else if (req.body.upvote !== undefined && req.body.upvote.toString().includes("Upvote")) {
         votingQuestionsDictionary[key].upVotes += 1
-    } else if(req.body.downvote !== undefined &&req.body.downvote.toString().includes("Downvote")){
+    } else if (req.body.downvote !== undefined && req.body.downvote.toString().includes("Downvote")) {
         votingQuestionsDictionary[key].downVotes += 1;
-    }
-    else  {
+    } else {
         votingAnswersDictionary[key].downVotes += 1
     }
     userPerAnswers[key].push(session.userid);
-    res.redirect("/question/"+redirectQuestion)
+    res.redirect("/question/" + redirectQuestion)
     return
 
 
 })
 
-app.get('/style.css', function (req, res) {
-    res.sendFile(__dirname + "/" + "style.css");
-    // res.sendFile("/style.css");
+app.get('/screen.css', function (req, res) {
+    res.sendFile(__dirname + "/" + "screen.css");
+    // res.sendFile("/screen.css");
 });
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/html/404.html'))
@@ -307,24 +347,66 @@ function readData(questionsTxt, answersTxt) {
         console.error(err)
     }
 }
+
 //TODO catch query request from html
 app.post("/search", urlencodeParser, (req, res) => {
-    console.log("hello")
-    console.log(req.body.search)
-    return
+
+    searchQuery = preprocess(req.body.search)
+    res.redirect("index.html/?search=" + searchQuery);
 })
 
 app.listen(3000, () => {
-    //var vecQuestionModel = "t";
-    //var vecAnswersModel =
-    //background.process();
+    /*TODO for Tutors if you want to wait for 5 minutes uncomment the function
+    the output data will be generated from the Answers|Question.json files
+    -------------------------
+    background.process();
+    -------------------------
+    */
+    background.initilize();
+    waitForInitilization();
     readData(questionsJsonFile, answersJsonFile)
+    initialize()
     console.log(`Example app listening at http://localhost:3000`);
 });
 
+function waitForInitilization() {
+    var bar = new ProgressBar(':bar', {total: 10});
+    var timer = setInterval(function () {
+        bar.tick();
+        if (background.questions_vector_model !== undefined) {
+            clearInterval(timer);
+        }
+    }, 100);
+}
+
+function initialize() {
+    mostlyRated = Object.keys(questions);
+    for (const key in mostlyRated) {
+        let index = parseInt(mostlyRated[key])
+        votingQuestionsDictionary[index] = {
+            "upVotes": questions[index].Score >= 0 ? questions[index].Score : 0,
+            "downVotes": questions[index].Score < 0 ? -questions[index].Score : 0
+        }
+        questions[index].key = index;
+    }
+
+    mostlyRated.sort(function (a, b) {
+        return questions[b].Score - questions[a].Score;
+    });
+    let keys = Object.keys(answers);
+    for (const key in keys) {
+        let index = parseInt(keys[key])
+        votingAnswersDictionary[index] = {
+            "upVotes": answers[index].Score >= 0 ? answers[index].Score : 0,
+            "downVotes": answers[index].Score < 0 ? -answers[index].Score : 0
+        }
+        answers[index].key = index;
+    }
+}
+
 //TODO for the future, we dont rerender the whole modle as it would need to much time
 //Will be done in future from Alex ;)
-function readAndAddToFile(post, file){
+function readAndAddToFile(post, file) {
     try {
         const data = fs.readFileSync(file, 'utf8')
         tmpFile = JSON.parse(data)

@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>WebTech21</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../screen.css">
+    <link href="/print.css" rel="stylesheet" media="print" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
 <div class="navbar">
-    <a class="current" href="index.html">Home</a>
-    <a href="question.html">Question</a>
-    <a href="new.html">New</a>
-    <a href="about.html">About</a>
+    <a class="current" href="../index.html">Home</a>
+    <a>Question</a>
+    <a href="../new.html">New</a>
+    <a href="../about.html">About</a>
 
     <a href="<% if(loggedIn){ %>
-        logout.html
+        ../logout.html
         <% } else{ %>
-        login.html
+        ../login.html
         <% } %>" class="setUp">
         <% if(loggedIn){ %>
             LogOut
@@ -24,14 +25,14 @@
             LogIn
         <% } %>
     </a>
-    <a href="register.html" class="setUp">Register</a>
+    <a href="../register.html" class="setUp">Register</a>
     <div class="search-container">
-        <form action="/search">
+        <form method="POST" action="/search">
             <input type="text" placeholder="Search.." name="search">
         </form>
     </div>
 </div>
-<header>Welcome to our best query and answer system in the World</header>
+<header>Welcome to our best query and answer system in the world</header>
 
 
 <div>

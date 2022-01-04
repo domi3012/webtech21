@@ -3,36 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../screen.css">
+    <link href="/print.css" rel="stylesheet" media="print" type="text/css" />
+
 </head>
 <body>
 <div class="navbar">
-    <a href="index.html">Home</a>
-    <a href="question.html">Question</a>
-    <a href="new.html">New</a>
-    <a href="about.html">About</a>
+    <a href="../index.html">Home</a>
+    <a>Question</a>
+    <a href="../new.html">New</a>
+    <a href="../about.html">About</a>
 
-    <a href="<%if(loggedIn){%>
-        logout.html
-        <%} else{%>
-        login.html
-        <%}%>" class="setUp"><%if(loggedIn){%>
+    <a href="<% if(loggedIn){ %>
+        ../logout.html
+        <% } else{ %>
+        ../login.html
+        <% } %>" class="setUp">
+        <% if(loggedIn){ %>
             LogOut
-        <%} else{%>
+        <% } else{ %>
             LogIn
-        <%}%></a>
-    <a href="register.html" class="setUp current">Register</a>
+        <% } %>
+    </a>
+    <a href="../register.html" class="setUp current">Register</a>
     <div class="search-container">
-        <form action="/search">
+        <form method="POST" action="/search">
             <input type="text" placeholder="Search.." name="search">
         </form>
     </div>
 </div>
 
 <form method="POST" action="/registerUser">
-    <%if(error){%>
+    <% if(error){ %>
         <p class="error">"Invalid registration. Please retry"</p>
-    <%}%>
+    <% } %>
     <div class="container">
         <h1>Register</h1>
         <p>Please fill in this form to create an account.</p>
@@ -49,7 +53,6 @@
         <button type="submit" class="registerbtn">Register</button>
     </div>
 </form>
-
 
 <footer><a href="about.html">Who are we?</a></footer>
 </body>

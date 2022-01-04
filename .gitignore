@@ -1,3 +1,5 @@
 node_modules
 /data/word_vectors.txt
+/output_data
+/input_data
 
