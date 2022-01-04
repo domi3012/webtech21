@@ -217,4 +217,4 @@ function getSimilarQuestionsFromQuery(input) {
     return questions_embeddings_model.getNearestWords(embedding, 20);
 }
 
-export {initilize, getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery, questions_vector_model}
+export {initilize, getSimilarQuestions, preprocess, getSimilarQuestionsFromQuery, questions_vector_model, process}

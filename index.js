@@ -33,7 +33,7 @@ var users = []
 
 var currentUsers = []
 
-let searchQuery = "";
+var searchQuery = "";
 
 var userPerQuestion = {}
 var userPerAnswers = {}
@@ -188,15 +188,15 @@ app.get('/about.html', function (req, res) {
 
 app.get('/index.html', function (req, res) {
     let indexData = [];
-    if (searchQuery === "") {
+    if (req.query.search === undefined) {
 
         for (let i = 0; i < 5; i++) {
             indexData.push(questions[mostlyRated[i]])
         }
-        searchQuery = "";
+        searchQuery = ""
     } else {
         var questionsIndex = [];
-        var queryQuestionsIds = background.getSimilarQuestionsFromQuery(searchQuery)
+        var queryQuestionsIds = background.getSimilarQuestionsFromQuery(req.query.search)
         for (const key in queryQuestionsIds) {
             if (queryQuestionsIds[key].word === undefined) continue;
             let idStr = queryQuestionsIds[key].word
@@ -216,6 +216,8 @@ app.get('/index.html', function (req, res) {
                 indexData.push(questions[mostlyRated[i]])
             }
         }
+        res.render("index", {loggedIn: false, text: indexData, voting: votingQuestionsDictionary});
+        return;
     }
     if (session && session.userid) {
         res.render("index", {loggedIn: true, text: indexData, voting: votingQuestionsDictionary});
@@ -280,7 +282,12 @@ app.post("/vote", urlencodeParser, (req, res) => {
     } else
         votingQuestionsDictionary[key].downVotes += 1;
     userPerQuestion[key].push(session.userid);
-    res.redirect("/index.html")
+    if (searchQuery !== undefined){
+        res.redirect("index.html/?search=" + searchQuery);
+    }
+    else {
+        res.redirect("/index.html")
+    }
     return
 })
 
@@ -316,9 +323,9 @@ app.post("/Ansvote", urlencodeParser, (req, res) => {
 
 })
 
-app.get('/style.css', function (req, res) {
-    res.sendFile(__dirname + "/" + "style.css");
-    // res.sendFile("/style.css");
+app.get('/screen.css', function (req, res) {
+    res.sendFile(__dirname + "/" + "screen.css");
+    // res.sendFile("/screen.css");
 });
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/html/404.html'))
@@ -343,8 +350,9 @@ function readData(questionsTxt, answersTxt) {
 
 //TODO catch query request from html
 app.post("/search", urlencodeParser, (req, res) => {
+
     searchQuery = preprocess(req.body.search)
-    res.redirect("index.html");
+    res.redirect("index.html/?search=" + searchQuery);
 })
 
 app.listen(3000, () => {
